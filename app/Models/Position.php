@@ -9,5 +9,6 @@ class Position extends Model
     protected $fillable = [
         'position',
         'leave_allocation',
+        'category',
     ];
 }
