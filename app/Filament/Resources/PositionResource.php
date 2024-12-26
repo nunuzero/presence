@@ -31,6 +31,9 @@ class PositionResource extends Resource
                 Forms\Components\TextInput::make('leave_allocation')
                     ->required()
                     ->numeric(),
+                Forms\Components\TextInput::make('category')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 
@@ -43,6 +46,8 @@ class PositionResource extends Resource
                 Tables\Columns\TextColumn::make('leave_allocation')
                     ->numeric()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('category')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

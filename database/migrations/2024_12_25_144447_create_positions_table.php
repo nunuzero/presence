@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('position');
             $table->integer('leave_allocation');
+            $table->string('category');
             $table->timestamps();
         });
     }
