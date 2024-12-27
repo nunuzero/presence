@@ -57,11 +57,12 @@ class User extends Authenticatable implements HasAvatar
 
     protected static function booted(): void
     {
-        // static::updating(function ($user) {
-        //     if ($user->profile_image){
-        //         $imageToDelete = $user->getOriginal('profile_image');
-        //         Storage::disk('profile_image')->delete($imageToDelete);
-        //     }
-        // });
+        static::updating(function ($user) {
+            $originalImage = $user->getOriginal('profile_image');
+            
+            if ($originalImage && Storage::disk('profile_image')->exists($originalImage)) {
+                Storage::disk('profile_image')->delete($originalImage);
+            }
+        });
     }
 }
