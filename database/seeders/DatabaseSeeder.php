@@ -17,8 +17,10 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Nunu',
-            'email' => 'admin@gmail.com',
+            'email' => 'nunu@gmail.com',
             'password' => 'nunu123',
         ]);
+
+        $this->call(WorkTimeSeeder::class);
     }
 }
