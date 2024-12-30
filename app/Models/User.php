@@ -4,11 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
-use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Support\Facades\Storage;
+use Filament\Models\Contracts\HasAvatar;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements HasAvatar
 {
@@ -64,5 +65,10 @@ class User extends Authenticatable implements HasAvatar
                 Storage::disk('profile_image')->delete($originalImage);
             }
         });
+    }
+
+    public function presences(): HasMany
+    {
+        return $this->hasMany(Presence::class);
     }
 }

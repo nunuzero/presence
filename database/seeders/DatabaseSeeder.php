@@ -14,14 +14,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Nunu',
-            'email' => 'nunu@gmail.com',
-            'password' => 'nunu123',
-        ]);
-
+        $this->call(UserSeeder::class);
         $this->call(WorkTimeSeeder::class);
         $this->call(PresenceTypeSeeder::class);
     }
