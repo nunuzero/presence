@@ -16,10 +16,10 @@ class PresenceTypeSeeder extends Seeder
     public function run()
     {
         $presenceTypes = [
-            ['type' => 'WFO', 'value' => '60'],
-            ['type' => 'WFH', 'value' => '60'],
-            ['type' => 'Cuti', 'value' => '10'],
-            ['type' => 'Izin', 'value' => '10'],
+            ['type' => 'WFO', 'value' => '10'],
+            ['type' => 'WFH', 'value' => '10'],
+            ['type' => 'Cuti', 'value' => '8'],
+            ['type' => 'Izin', 'value' => '8'],
             ['type' => 'Sakit', 'value' => '5'],
             ['type' => 'Tidak Masuk', 'value' => '1'],
         ];
