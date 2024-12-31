@@ -9,6 +9,9 @@ use Endroid\QrCode\Label\LabelAlignment;
 use Endroid\QrCode\Label\Font\OpenSans;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Endroid\QrCode\Writer\PngWriter;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Http;
+use App\Models\Holiday;
 
 Artisan::command('qrcode:generate', function() {
     $token = md5(uniqid(rand(), true));
@@ -33,6 +36,35 @@ Artisan::command('qrcode:generate', function() {
     $this->info('QR Code generated successfully');
 })->purpose('Generate QR code for attendance')->everyFiveMinutes();
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote')->hourly();
+Artisan::command('holidays:fetch', function() {
+    try {
+        $currentMonth = Carbon::now()->format('m');
+        
+        $response = Http::get("https://api-harilibur.vercel.app/api", [
+            'month' => $currentMonth
+        ]);
+
+        if ($response->successful()) {
+            $holidays = $response->json();
+            
+            foreach ($holidays as $holiday) {
+                $holidayDate = Carbon::parse($holiday['holiday_date']);
+                
+                Holiday::updateOrCreate(
+                    ['date' => $holidayDate],
+                    [
+                        'name' => $holiday['holiday_name'],
+                        'date' => $holidayDate,
+                        'is_national_holiday' => $holiday['is_national_holiday']
+                    ]
+                );
+            }
+            
+            $this->info('Holidays data has been successfully fetched and stored.');
+        } else {
+            $this->error('Failed to fetch data from API.');
+        }
+    } catch (\Exception $e) {
+        $this->error('Error: ' . $e->getMessage());
+    }
+})->purpose('Fetch holidays data from API')->monthlyOn(1, '00:00');
