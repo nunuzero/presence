@@ -18,13 +18,13 @@ class WorkTimeSeeder extends Seeder
         $currentTimestamp = now();
 
         $workTimes = [
-            ['day' => 'Sunday', 'is_workday' => '0', 'start_time' => null, 'end_time' => null, 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
-            ['day' => 'Monday', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
-            ['day' => 'Tuesday', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
-            ['day' => 'Wednesday', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
-            ['day' => 'Thursday', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
-            ['day' => 'Friday', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
-            ['day' => 'Saturday', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
+            ['day' => 'Minggu', 'is_workday' => '0', 'start_time' => null, 'end_time' => null, 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
+            ['day' => 'Senin', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
+            ['day' => 'Selasa', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
+            ['day' => 'Rabu', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
+            ['day' => 'Kamis', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
+            ['day' => 'Jum\'at', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
+            ['day' => 'Sabtu', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00', 'created_at' => $currentTimestamp, 'updated_at' => $currentTimestamp],
         ];
 
         DB::table('work_times')->insert($workTimes);

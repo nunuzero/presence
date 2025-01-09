@@ -20,8 +20,6 @@ class WorkTimeResource extends Resource
 {
     protected static ?string $model = WorkTime::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
-
     protected static ?string $cluster = Settings::class;
 
     public static function table(Table $table): Table
