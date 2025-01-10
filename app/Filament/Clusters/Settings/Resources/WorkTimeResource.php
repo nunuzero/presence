@@ -28,6 +28,7 @@ class WorkTimeResource extends Resource
             ->paginated(false)
             ->columns([
                 Tables\Columns\TextColumn::make('day')
+                ->localizeLabel()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_workday')
                     ->trueIcon('heroicon-o-check-circle')
