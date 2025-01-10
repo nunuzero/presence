@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Closure;
 use Filament\Forms\Components\Field;
+use Filament\Forms\Components\Section;
 use Filament\Navigation\NavigationGroup;
 use Filament\Resources\Components\Tab;
 use Filament\Tables\Columns\Column;
@@ -30,6 +31,10 @@ class TranslationServiceProvider extends ServiceProvider
         });
 
         Column::macro('localizeLabel', function (string | Htmlable | Closure | null $customLabel = null): static {
+            return TranslationServiceProvider::localizeLabelGeneric($this, $customLabel);
+        });
+
+        Section::macro('localizeLabel', function (string | Htmlable | Closure | null $customLabel = null): static {
             return TranslationServiceProvider::localizeLabelGeneric($this, $customLabel);
         });
 

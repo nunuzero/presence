@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PresenceTypeResource\Pages;
 use App\Filament\Resources\PresenceTypeResource\RelationManagers;
+use App\Helper\ResourceTranslate;
 use App\Models\PresenceType;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -15,20 +16,28 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PresenceTypeResource extends Resource
 {
+    use ResourceTranslate;
+
     protected static ?string $model = PresenceType::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static ?string $navigationGroup = 'Presence';
 
+    protected static ?string $title = 'Presence Type';
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('type')
+                    ->label('Type')
+                    ->localizeLabel()
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('value')
+                    ->label('Value')
+                    ->localizeLabel()
                     ->required()
                     ->numeric(),
             ]);
@@ -39,15 +48,22 @@ class PresenceTypeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('type')
+                    ->label('Type')
+                    ->localizeLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('value')
-                    ->numeric()
-                    ->sortable(),
+                    ->label('Value')
+                    ->localizeLabel()
+                    ->numeric(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->localizeLabel()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated At')
+                    ->localizeLabel()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

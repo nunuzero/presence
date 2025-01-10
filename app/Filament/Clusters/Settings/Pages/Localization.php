@@ -8,6 +8,7 @@ use Filament\Actions\Action;
 use Livewire\Attributes\Locked;
 use function Filament\authorize;
 use App\Filament\Clusters\Settings;
+use App\Helper\PageTranslate;
 use Illuminate\Support\Facades\App;
 use Filament\Forms\Components\Select;
 use Filament\Support\Exceptions\Halt;
@@ -26,7 +27,7 @@ use App\Models\Setting\Localization as LocalizationModel;
 
 class Localization extends Page implements HasForms
 {
-    use InteractsWithForms;
+    use InteractsWithForms, PageTranslate;
 
     public ?array $data = [];
 
@@ -38,16 +39,6 @@ class Localization extends Page implements HasForms
     protected static string $view = 'filament.clusters.settings.pages.localization';
 
     protected static ?string $cluster = Settings::class;
-
-    public function getTitle(): string | Htmlable
-    {
-        return translate(static::$title);
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return translate(static::$title);
-    }
 
     public function mount(): void
     {
@@ -77,10 +68,9 @@ class Localization extends Page implements HasForms
 
     protected function getGeneralSection(): Component
     {
-        return Section::make('General')
+        return Section::make(translate('General'))
             ->schema([
                 Select::make('language')
-                    // ->softRequired()
                     ->localizeLabel()
                     ->options(LocalizationModel::getAllLanguages())
                     ->searchable(),
