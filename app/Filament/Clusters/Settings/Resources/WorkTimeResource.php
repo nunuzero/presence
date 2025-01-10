@@ -12,17 +12,21 @@ use Filament\Resources\Resource;
 use App\Filament\Clusters\Settings;
 use Illuminate\Database\Eloquent\Builder;
 
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Settings\Resources\WorkTimeResource\Pages;
 use App\Filament\Clusters\Settings\Resources\WorkTimeResource\RelationManagers;
+use App\Helper\PageTranslate;
 
 class WorkTimeResource extends Resource
 {
+    use PageTranslate; 
+
     protected static ?string $model = WorkTime::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clock';
-
     protected static ?string $cluster = Settings::class;
+
+    protected static ?string $title = 'Work Time';
 
     public static function table(Table $table): Table
     {
@@ -30,22 +34,33 @@ class WorkTimeResource extends Resource
             ->paginated(false)
             ->columns([
                 Tables\Columns\TextColumn::make('day')
+                    ->localizeLabel()
                     ->searchable(),
                 Tables\Columns\IconColumn::make('is_workday')
+                    ->label('Is Workday')
+                    ->localizeLabel()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-x-circle')
                     ->trueColor('success')
                     ->falseColor('danger')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('start_time')
+                    ->label('Start Time')
+                    ->localizeLabel()
                     ->time('H:i'),
                 Tables\Columns\TextColumn::make('end_time')
+                    ->label('End Time')
+                    ->localizeLabel()
                     ->time('H:i'),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->localizeLabel()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Updated At')
+                    ->localizeLabel()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -59,11 +74,15 @@ class WorkTimeResource extends Resource
                     ->modalWidth('lg')
                     ->form([
                         Forms\Components\TextInput::make('day')
+                            ->label('Day')
+                            ->localizeLabel()
                             ->required()
                             ->disabled()
                             ->dehydrated()
                             ->maxLength(255),
                         Forms\Components\Radio::make('is_workday')
+                            ->label('Is Workday')
+                            ->localizeLabel()
                             ->required()
                             ->boolean()
                             ->inline()
@@ -77,11 +96,13 @@ class WorkTimeResource extends Resource
 
 
                         Forms\Components\Section::make()
-                            ->description('hint: start time cannot be earlier or equal to end time')
+                            ->description(translate('hint: start time cannot be earlier or equal to end time'))
                             ->schema([
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TimePicker::make('start_time')
+                                            ->label('Start Time')
+                                            ->localizeLabel()
                                             ->native(false)
                                             ->seconds(false)
                                             ->disabled(fn($get) => !$get('is_workday'))
@@ -94,6 +115,8 @@ class WorkTimeResource extends Resource
                                             }),
 
                                         Forms\Components\TimePicker::make('end_time')
+                                            ->label('End Time')
+                                            ->localizeLabel()
                                             ->native(false)
                                             ->seconds(false)
                                             ->disabled(fn($get) => !$get('is_workday'))
