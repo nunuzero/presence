@@ -7,6 +7,7 @@ use App\Filament\Resources\PresenceTypeResource\RelationManagers;
 use App\Helper\ResourceTranslate;
 use App\Models\PresenceType;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -30,16 +31,19 @@ class PresenceTypeResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('type')
-                    ->label('Type')
-                    ->localizeLabel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('value')
-                    ->label('Value')
-                    ->localizeLabel()
-                    ->required()
-                    ->numeric(),
+                Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('type')
+                            ->label('Type')
+                            ->localizeLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('value')
+                            ->label('Value')
+                            ->localizeLabel()
+                            ->required()
+                            ->numeric(),
+                    ])->columns()
             ]);
     }
 
