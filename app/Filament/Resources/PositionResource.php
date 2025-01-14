@@ -53,6 +53,7 @@ class PositionResource extends Resource
                                 'Programmer' => 'Programmer',
                                 'UI/UX' => 'UI/UX',
                                 'Support & Marketing' => 'Support & Marketing',
+                                'Intern' => 'Intern',
                             ])
                             ->native(false),
                     ])->columns()

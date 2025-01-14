@@ -23,5 +23,8 @@
     "Position": "Position",
     "Management": "Management",
     "Leave Allocation": "Leave Allocation",
-    "Category": "Category"
+    "Category": "Category",
+    "Start Date": "Start Date",
+    "Education": "Education",
+    "Staff": "Staff"
 }
