@@ -26,5 +26,10 @@
     "Category": "Category",
     "Start Date": "Start Date",
     "Education": "Education",
-    "Staff": "Staff"
+    "Staff": "Staff",
+    "Name and user for staff": "Name and user for staff",
+    "Staff details": "Staff details",
+    "Email": "Email",
+    "Password": "Password",
+    "Note": "Note"
 }

@@ -40,6 +40,8 @@ class StaffResource extends Resource
                         Section::make()
                             ->schema([
                                 Forms\Components\TextInput::make('name')
+                                    ->label('Name')
+                                    ->localizeLabel()
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpanFull(),
@@ -47,31 +49,35 @@ class StaffResource extends Resource
                                     ->relationship('staff')
                                     ->schema([
                                         Forms\Components\DatePicker::make('start_date')
+                                            ->label('Start Date')
+                                            ->localizeLabel()
                                             ->required()
                                             ->native(false),
                                         Forms\Components\TextInput::make('education')
+                                            ->label('Education')
+                                            ->localizeLabel()
                                             ->required()
                                             ->maxLength(255),
                                         Forms\Components\Select::make('position_id')
-                                            ->required()
                                             ->label('Position')
+                                            ->localizeLabel()
+                                            ->required()
                                             ->options(Position::all()->pluck('position', 'id'))
                                             ->searchable(),
                                         Forms\Components\Textarea::make('note')
+                                            ->label('Note')
+                                            ->localizeLabel()
                                             ->columnSpanFull(),
                                     ])
                             ])->columnSpan(['lg' => 2]),
                         Section::make()
                             ->schema([
                                 Forms\Components\TextInput::make('email')
+                                    ->label('Email')
+                                    ->localizeLabel()
                                     ->unique()
                                     ->email()
                                     ->required()
-                                    ->maxLength(255),
-                                Forms\Components\TextInput::make('password')
-                                    ->password()
-                                    ->dehydrated(false)
-                                    ->revealable()
                                     ->maxLength(255),
                             ])->columnSpan(['lg' => 1]),
                     ])->columns(3)
@@ -151,17 +157,24 @@ class StaffResource extends Resource
                 ->relationship('staff')
                 ->schema([
                     Forms\Components\DatePicker::make('start_date')
+                        ->label('Start Date')
+                        ->localizeLabel()
                         ->required()
                         ->native(false),
                     Forms\Components\TextInput::make('education')
+                        ->label('Education')
+                        ->localizeLabel()
                         ->required()
                         ->maxLength(255),
                     Forms\Components\Select::make('position_id')
-                        ->required()
                         ->label('Position')
+                        ->localizeLabel()
+                        ->required()
                         ->options(Position::all()->pluck('position', 'id'))
                         ->searchable(),
                     Forms\Components\Textarea::make('note')
+                        ->label('Note')
+                        ->localizeLabel()
                         ->columnSpanFull(),
                 ])->columns()
         ];
@@ -171,15 +184,21 @@ class StaffResource extends Resource
     {
         return [
             Forms\Components\TextInput::make('name')
+                ->label('Name')
+                ->localizeLabel()
                 ->required()
                 ->maxLength(255)
                 ->columnSpanFull(),
             Forms\Components\TextInput::make('email')
+                ->label('Email')
+                ->localizeLabel()
                 ->unique()
                 ->email()
                 ->required()
                 ->maxLength(255),
             Forms\Components\TextInput::make('password')
+                ->label('Password')
+                ->localizeLabel()
                 ->password()
                 ->required()
                 ->revealable()

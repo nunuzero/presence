@@ -32,12 +32,12 @@ class CreateStaff extends CreateRecord
     protected function getSteps(): array
     {
         return [
-            Step::make('staff_user')
-                ->label('User for staff')
+            Step::make('name_and_user')
+                ->label(translate('Name and user for staff'))
                 ->schema(StaffResource::getUserForm())
                 ->columns(),
-            Step::make('staff_information')
-                ->label('Staff information')
+            Step::make('staff_details')
+                ->label(translate('Staff details'))
                 ->schema(StaffResource::getStaffForm()),
         ];
     }
