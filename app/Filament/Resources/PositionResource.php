@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PositionResource\Pages;
-use App\Filament\Resources\PositionResource\RelationManagers;
-use App\Helper\ResourceTranslate;
-use App\Models\Position;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Position;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Helper\ResourceTranslate;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\PositionResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PositionResource\RelationManagers;
 
 class PositionResource extends Resource
 {
@@ -30,21 +32,31 @@ class PositionResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('position')
-                    ->label('Position')
-                    ->localizeLabel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('leave_allocation')
-                    ->label('Leave Allocation')
-                    ->localizeLabel()
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('category')
-                    ->label('Category')
-                    ->localizeLabel()
-                    ->required()
-                    ->maxLength(255),
+                Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('position')
+                            ->label('Position')
+                            ->localizeLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('leave_allocation')
+                            ->label('Leave Allocation')
+                            ->localizeLabel()
+                            ->required()
+                            ->numeric(),
+                        Select::make('category')
+                            ->label('Category')
+                            ->localizeLabel()
+                            ->required()
+                            ->options([
+                                'Project Manager' => 'Project Manager',
+                                'Programmer' => 'Programmer',
+                                'UI/UX' => 'UI/UX',
+                                'Support & Marketing' => 'Support & Marketing',
+                                'Intern' => 'Intern',
+                            ])
+                            ->native(false),
+                    ])->columns()
             ]);
     }
 

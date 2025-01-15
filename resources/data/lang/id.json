@@ -22,5 +22,13 @@
     "Position": "Jabatan",
     "Leave Allocation": "Alokasi Cuti",
     "Category": "Kategori",
-    "Management": "Manajemen"
+    "Management": "Manajemen",
+    "Start Date": "Waktu Mulai Bekerja",
+    "Education": "Pendidikan Terakhir",
+    "Staff": "Karyawan",
+    "Name and user for staff": "Nama dan pengguna untuk karyawan",
+    "Staff details": "Detail karyawan",
+    "Email": "Email",
+    "Password": "Kata Sandi",
+    "Note": "Catatan"
 }

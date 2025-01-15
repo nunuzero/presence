@@ -16,8 +16,6 @@ class SettingLocalizationSeeder extends Seeder
      */
     public function run()
     {
-        // $currentTimestamp = now();
-
         Localization::create([
             'language' => 'en',
             'timezone' => 'UTC',

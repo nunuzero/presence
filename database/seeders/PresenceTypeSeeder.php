@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\PresenceType;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -24,6 +25,8 @@ class PresenceTypeSeeder extends Seeder
             ['type' => 'Tidak Masuk', 'value' => '1'],
         ];
 
-        DB::table('presence_types')->insert($presenceTypes);
+        foreach ($presenceTypes as $presenceType) {
+            PresenceType::create($presenceType);
+        }
     }
 }

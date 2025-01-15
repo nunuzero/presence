@@ -2,53 +2,86 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\StaffResource\Pages;
-use App\Filament\Resources\StaffResource\RelationManagers;
-use App\Models\Position;
-use App\Models\Staff;
-use App\Models\User;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use App\Models\Position;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Fieldset;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\StaffResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\StaffResource\RelationManagers;
+use App\Helper\ResourceTranslate;
+use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Section;
 
 class StaffResource extends Resource
 {
-    protected static ?string $model = Staff::class;
+    use ResourceTranslate;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static ?string $model = User::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-users';
 
     protected static ?string $navigationGroup = 'Management';
+
+    protected static ?string $title = 'Staff';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('start_date')
-                    ->required()
-                    ->native(false),
-                Forms\Components\TextInput::make('education')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('note')
-                    ->columnSpanFull(),
-                Forms\Components\Select::make('user_id')
-                    ->required()
-                    ->label('User')
-                    ->options(User::all()->pluck('email', 'id'))
-                    ->searchable(),
-                Forms\Components\Select::make('position_id')
-                    ->required()
-                    ->label('Position')
-                    ->options(Position::all()->pluck('position', 'id'))
-                    ->searchable(),
-            ]);
+                Group::make()
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('name')
+                                    ->label('Name')
+                                    ->localizeLabel()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                                Group::make()
+                                    ->relationship('staff')
+                                    ->schema([
+                                        Forms\Components\DatePicker::make('start_date')
+                                            ->label('Start Date')
+                                            ->localizeLabel()
+                                            ->required()
+                                            ->native(false),
+                                        Forms\Components\TextInput::make('education')
+                                            ->label('Education')
+                                            ->localizeLabel()
+                                            ->required()
+                                            ->maxLength(255),
+                                        Forms\Components\Select::make('position_id')
+                                            ->label('Position')
+                                            ->localizeLabel()
+                                            ->required()
+                                            ->options(Position::all()->pluck('position', 'id'))
+                                            ->searchable(),
+                                        Forms\Components\Textarea::make('note')
+                                            ->label('Note')
+                                            ->localizeLabel()
+                                            ->columnSpanFull(),
+                                    ])
+                            ])->columnSpan(['lg' => 2]),
+                        Section::make()
+                            ->schema([
+                                Forms\Components\TextInput::make('email')
+                                    ->label('Email')
+                                    ->localizeLabel()
+                                    ->unique()
+                                    ->email()
+                                    ->required()
+                                    ->maxLength(255),
+                            ])->columnSpan(['lg' => 1]),
+                    ])->columns(3)
+            ])->columns(1);
     }
 
     public static function table(Table $table): Table
@@ -56,24 +89,33 @@ class StaffResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Name')
+                    ->localizeLabel()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('start_date')
+                Tables\Columns\TextColumn::make('staff.start_date')
+                    ->label('Start Date')
+                    ->localizeLabel()
                     ->date()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('education')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('user.email')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('position.position')
-                    ->numeric()
                     ->sortable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('staff.education')
+                    ->label('Education')
+                    ->localizeLabel()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('staff.position.position')
+                    ->label('Position')
+                    ->localizeLabel()
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('staff.created_at')
+                    ->label('Created At')
+                    ->localizeLabel()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('staff.updated_at')
+                    ->label('Updated At')
+                    ->localizeLabel()
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -105,6 +147,62 @@ class StaffResource extends Resource
             'index' => Pages\ListStaff::route('/'),
             'create' => Pages\CreateStaff::route('/create'),
             'edit' => Pages\EditStaff::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getStaffForm(): array
+    {
+        return [
+            Group::make()
+                ->relationship('staff')
+                ->schema([
+                    Forms\Components\DatePicker::make('start_date')
+                        ->label('Start Date')
+                        ->localizeLabel()
+                        ->required()
+                        ->native(false),
+                    Forms\Components\TextInput::make('education')
+                        ->label('Education')
+                        ->localizeLabel()
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\Select::make('position_id')
+                        ->label('Position')
+                        ->localizeLabel()
+                        ->required()
+                        ->options(Position::all()->pluck('position', 'id'))
+                        ->searchable(),
+                    Forms\Components\Textarea::make('note')
+                        ->label('Note')
+                        ->localizeLabel()
+                        ->columnSpanFull(),
+                ])->columns()
+        ];
+    }
+
+    public static function getUserForm(): array
+    {
+        return [
+            Forms\Components\TextInput::make('name')
+                ->label('Name')
+                ->localizeLabel()
+                ->required()
+                ->maxLength(255)
+                ->columnSpanFull(),
+            Forms\Components\TextInput::make('email')
+                ->label('Email')
+                ->localizeLabel()
+                ->unique()
+                ->email()
+                ->required()
+                ->maxLength(255),
+            Forms\Components\TextInput::make('password')
+                ->label('Password')
+                ->localizeLabel()
+                ->password()
+                ->required()
+                ->revealable()
+                ->maxLength(255),
         ];
     }
 }

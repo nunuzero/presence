@@ -7,6 +7,7 @@ use App\Filament\Resources\HolidayResource\RelationManagers;
 use App\Helper\ResourceTranslate;
 use App\Models\Holiday;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -30,22 +31,26 @@ class HolidayResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->label('Name')
-                    ->localizeLabel()
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('date')
-                    ->label('Date')
-                    ->localizeLabel()
-                    ->required()
-                    ->native(false),
-                Forms\Components\Radio::make('is_national_holiday')
-                    ->label('Is National Holiday')
-                    ->localizeLabel()
-                    ->required()
-                    ->boolean()
-                    ->inline(),
+                Section::make()
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Name')
+                            ->localizeLabel()
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\DatePicker::make('date')
+                            ->label('Date')
+                            ->localizeLabel()
+                            ->required()
+                            ->native(false),
+                        Forms\Components\Radio::make('is_national_holiday')
+                            ->label('Is National Holiday')
+                            ->localizeLabel()
+                            ->required()
+                            ->boolean()
+                            ->inline()
+                            ->columnSpanFull(),
+                    ])->columns()
             ]);
     }
 
