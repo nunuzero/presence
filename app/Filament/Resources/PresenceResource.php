@@ -43,6 +43,15 @@ class PresenceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->groups([
+                Tables\Grouping\Group::make('time')
+                    ->label(translate('Day'))
+                    ->date('d ' . translate('F') . ' t')
+                    ->collapsible()
+                    ->orderQueryUsing(fn(Builder $query) => $query->orderBy('time', 'desc')),
+            ])
+            ->groupingDirectionSettingHidden()
+            ->defaultGroup('time')
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Name')
@@ -53,11 +62,16 @@ class PresenceResource extends Resource
                     ->localizeLabel()
                     ->badge()
                     ->colors([
-                        'success' => static fn ($state): bool => $state === 'WFO' || $state === 'WFH',
-                        'sky' => static fn ($state): bool => $state === 'Izin',
-                        'danger' => static fn ($state): bool => $state === 'Sakit',
-                        'violet' => static fn ($state): bool => $state === 'Cuti',
-                    ]),
+                        'success' => static fn($state): bool => $state === 'WFO' || $state === 'WFH',
+                        'sky' => static fn($state): bool => $state === 'Izin',
+                        'danger' => static fn($state): bool => $state === 'Sakit',
+                        'violet' => static fn($state): bool => $state === 'Cuti',
+                    ])
+                    ->icon(fn (string $state): string => match ($state) {
+                        'WFO' => 'heroicon-o-building-office',
+                        'WFH' => 'heroicon-o-home',
+                        default => '',
+                    }),
                 Tables\Columns\TextColumn::make('time')
                     ->label('Time')
                     ->localizeLabel()
@@ -67,6 +81,7 @@ class PresenceResource extends Resource
             ->filters([
                 //
             ])
+            ->defaultSort('time', 'desc')
             ->actions([])
             ->bulkActions([]);
     }
