@@ -33,5 +33,11 @@
     "Password": "Password",
     "Note": "Note",
     "Time": "Time",
-    "All": "All"
+    "All": "All",
+    "Create": "Create",
+    "create": "create",
+    "From Date": "From Date",
+    "To": "To",
+    "Generate PDF Report": "Generate PDF Report",
+    "PDF Report": "PDF Report"
 }

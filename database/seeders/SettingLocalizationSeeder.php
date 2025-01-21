@@ -17,7 +17,7 @@ class SettingLocalizationSeeder extends Seeder
     public function run()
     {
         Localization::create([
-            'language' => 'en',
+            'language' => 'id',
             'timezone' => 'UTC',
         ]);
     }

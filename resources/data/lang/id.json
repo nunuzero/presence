@@ -32,5 +32,10 @@
     "Password": "Kata Sandi",
     "Note": "Catatan",
     "Time": "Waktu Presensi",
-    "All": "Semua"
+    "All": "Semua",
+    "Create": "Buat",
+    "PDF Report": "Laporan PDF",
+    "From Date": "Dari Tanggal",
+    "To": "Sampai",
+    "Generate PDF Report": "Buat Laporan PDF"
 }

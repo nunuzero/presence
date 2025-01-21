@@ -19,10 +19,9 @@ class PresenceTypeSeeder extends Seeder
         $presenceTypes = [
             ['type' => 'WFO', 'value' => '10'],
             ['type' => 'WFH', 'value' => '10'],
-            ['type' => 'Cuti', 'value' => '8'],
-            ['type' => 'Izin', 'value' => '8'],
-            ['type' => 'Sakit', 'value' => '5'],
-            ['type' => 'Tidak Masuk', 'value' => '1'],
+            ['type' => 'Izin', 'value' => '2'],
+            ['type' => 'Sakit', 'value' => '2'],
+            ['type' => 'Cuti', 'value' => '1'],
         ];
 
         foreach ($presenceTypes as $presenceType) {

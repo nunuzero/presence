@@ -17,5 +17,6 @@ class DatabaseSeeder extends Seeder
         $this->call(PresenceTypeSeeder::class);
         $this->call(PositionSeeder::class);
         $this->call(StaffSeeder::class);
+        $this->call(PresenceSeeder::class);
     }
 }
