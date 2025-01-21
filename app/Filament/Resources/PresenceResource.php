@@ -51,9 +51,13 @@ class PresenceResource extends Resource
                 Tables\Columns\TextColumn::make('presenceType.type')
                     ->label('Presence Type')
                     ->localizeLabel()
-                    ->sortable()
-                    ->searchable()
-                    ->badge(),
+                    ->badge()
+                    ->colors([
+                        'success' => static fn ($state): bool => $state === 'WFO' || $state === 'WFH',
+                        'sky' => static fn ($state): bool => $state === 'Izin',
+                        'danger' => static fn ($state): bool => $state === 'Sakit',
+                        'violet' => static fn ($state): bool => $state === 'Cuti',
+                    ]),
                 Tables\Columns\TextColumn::make('time')
                     ->label('Time')
                     ->localizeLabel()

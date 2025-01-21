@@ -9,6 +9,8 @@ use Filament\Support\Enums\Alignment;
 use Illuminate\Support\ServiceProvider;
 use Filament\Support\Facades\FilamentAsset;
 use Filament\Notifications\Livewire\Notifications;
+use Filament\Support\Colors\Color;
+use Filament\Support\Facades\FilamentColor;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -32,6 +34,11 @@ class AppServiceProvider extends ServiceProvider
 
         FilamentAsset::register([
             Js::make('TopNavigation', __DIR__ . '/../../resources/js/TopNavigation.js'),
+        ]);
+
+        FilamentColor::register([
+            'sky' => Color::Sky,
+            'violet' => Color::Violet,
         ]);
     }
 }

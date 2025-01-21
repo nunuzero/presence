@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.2",
         "andrewdwallo/transmatic": "^1.1",
+        "barryvdh/laravel-dompdf": "^3.0",
         "endroid/qr-code": "^6.0",
         "filament/filament": "^3.2",
         "filament/widgets": "^3.2",
