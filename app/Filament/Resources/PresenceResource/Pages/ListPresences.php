@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\PresenceResource\Pages;
 
 use Carbon\Carbon;
+use Illuminate\Support\Carbon as Carbon2;
 use Filament\Actions;
 use App\Models\Presence;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -26,7 +27,7 @@ class ListPresences extends ListRecords
                 ->label(translate('PDF Report'))
                 ->icon('heroicon-o-document')
                 ->modalSubmitActionLabel(translate('Create'))
-                ->modalHeading('Generate PDF Report')
+                ->modalHeading(translate('Generate PDF Report'))
                 ->modalWidth('lg')
                 ->form([
                     TextInput::make('name')
@@ -50,18 +51,51 @@ class ListPresences extends ListRecords
                     ]),
                 ])
                 ->action(function (array $data) {
+                    $name = $data['name'];
                     $startDate = $data['start_date'];
                     $endDate = $data['end_date'];
-                    $name = $data['name'];
-                
-                    $startDate = Carbon::createFromFormat('d/m/Y', $startDate)->startOfDay()->toDateTimeString();
-                    $endDate = Carbon::createFromFormat('d/m/Y', $endDate)->endOfDay()->toDateTimeString();
-                
-                    $presences = Presence::whereBetween('time', [$startDate, $endDate])->get();
-                
-                    return response()->streamDownload(function () use ($presences) {
+
+                    $startDateCarbon = Carbon::createFromFormat('d/m/Y', $startDate)->startOfDay();
+                    $endDateCarbon = Carbon::createFromFormat('d/m/Y', $endDate)->endOfDay();
+
+                    $formattedStartDate = $startDateCarbon->day . ' ' . translate($startDateCarbon->format('F')) . ' ' . $startDateCarbon->year;
+                    $formattedEndDate = $endDateCarbon->day . ' ' . translate($endDateCarbon->format('F')) . ' ' . $endDateCarbon->year;
+
+                    $presences = Presence::with(['user', 'presenceType'])
+                        ->whereBetween('time', [$startDateCarbon->toDateTimeString(), $endDateCarbon->toDateTimeString()])
+                        ->get()
+                        ->groupBy(function ($presence) {
+                            $month = Carbon2::parse($presence->time)->format('F');
+                            $year = Carbon2::parse($presence->time)->format('Y');
+                            return __(':month :year', ['month' => translate($month), 'year' => $year]);
+                        })
+                        ->map(function ($groupByMonth) {
+                            return $groupByMonth->groupBy('user_id')->map(function ($userPresences) {
+                                $types = ['WFO', 'WFH', 'Izin', 'Sakit', 'Cuti', 'Tidak Masuk'];
+                                $summary = array_fill_keys($types, 0);
+
+                                foreach ($userPresences as $presence) {
+                                    $type = $presence->presenceType->type ?? 'Tidak Masuk';
+                                    $summary[$type]++;
+                                }
+
+                                return [
+                                    'user_name' => $userPresences->first()->user->name ?? 'Unknown',
+                                    'summary' => $summary,
+                                ];
+                            });
+                        });
+
+                    return response()->streamDownload(function () use ($name, $presences, $formattedStartDate, $formattedEndDate) {
                         echo Pdf::loadHtml(
-                            Blade::render('pdf', ['presences' => $presences])
+                            Blade::render('pdf.simple', [
+                                'presences' => $presences,
+                                'name' => $name,
+                                'startDate' => $formattedStartDate,
+                                'endDate' => $formattedEndDate,
+                                'startDateLabel' => translate('From Date:'),
+                                'endDateLabel' => translate('To:'),
+                            ])
                         )->stream();
                     }, $name . '.pdf');
                 }),
