@@ -18,7 +18,7 @@ class SettingLocalizationSeeder extends Seeder
     {
         Localization::create([
             'language' => 'id',
-            'timezone' => 'UTC',
+            'timezone' => 'Asia/Makassar',
         ]);
     }
 }

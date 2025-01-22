@@ -35,7 +35,7 @@ class Localization extends Page implements HasForms
     public ?LocalizationModel $record = null;
 
     protected static ?string $title = 'Localization';
-    
+
     protected static string $view = 'filament.clusters.settings.pages.localization';
 
     protected static ?string $cluster = Settings::class;
@@ -43,7 +43,7 @@ class Localization extends Page implements HasForms
     public function mount(): void
     {
         $this->record = LocalizationModel::first();
-        
+
         $this->fillForm();
     }
 
@@ -71,9 +71,29 @@ class Localization extends Page implements HasForms
         return Section::make(translate('General'))
             ->schema([
                 Select::make('language')
+                    ->label('Language')
                     ->localizeLabel()
+                    ->required()
                     ->options(LocalizationModel::getAllLanguages())
                     ->searchable(),
+                Select::make('timezone')
+                    ->label('Timezone')
+                    ->localizeLabel()
+                    ->options(
+                        collect(\DateTimeZone::listIdentifiers())
+                            ->mapWithKeys(function ($tz) {
+                                $dateTimeZone = new \DateTimeZone($tz);
+                                $offset = $dateTimeZone->getOffset(new \DateTime('now', $dateTimeZone));
+                                $hours = intdiv($offset, 3600);
+                                $minutes = ($offset % 3600) / 60;
+
+                                $formattedOffset = 'GMT' . ($hours >= 0 ? '+' : '') . $hours . ':' . str_pad(abs($minutes), 2, '0', STR_PAD_LEFT);
+
+                                return [$tz => "$tz ($formattedOffset)"];
+                            })
+                            ->toArray()
+                    )
+                    ->searchable()
             ])->columns();
     }
 

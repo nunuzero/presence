@@ -16,11 +16,11 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Clusters\Settings\Resources\WorkTimeResource\Pages;
 use App\Filament\Clusters\Settings\Resources\WorkTimeResource\RelationManagers;
-use App\Helper\PageTranslate;
+use App\Helper\ClusterResourceTranslate;
 
 class WorkTimeResource extends Resource
 {
-    use PageTranslate; 
+    use ClusterResourceTranslate; 
 
     protected static ?string $model = WorkTime::class;
 

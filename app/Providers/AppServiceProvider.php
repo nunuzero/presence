@@ -3,14 +3,15 @@
 namespace App\Providers;
 
 use Filament\Support\Assets\Js;
+use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\App;
 use App\Models\Setting\Localization;
 use Filament\Support\Enums\Alignment;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\ServiceProvider;
 use Filament\Support\Facades\FilamentAsset;
-use Filament\Notifications\Livewire\Notifications;
-use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
+use Filament\Notifications\Livewire\Notifications;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -29,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
     {
         $language = Localization::first()?->language ?? 'en';
         App::setLocale($language);
+
+        $timezone = Localization::first()?->timezone ?? 'UTC';
+        Config::set('app.timezone', $timezone);
+        date_default_timezone_set($timezone);
 
         Notifications::alignment(Alignment::Center);
 
