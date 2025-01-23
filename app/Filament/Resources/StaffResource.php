@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StaffResource\RelationManagers;
 use App\Helper\ResourceTranslate;
 use Filament\Forms\Components\Group;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Section;
 
 class StaffResource extends Resource
@@ -70,15 +71,20 @@ class StaffResource extends Resource
                                             ->columnSpanFull(),
                                     ])
                             ])->columnSpan(['lg' => 2]),
-                        Section::make()
+                        Group::make()
                             ->schema([
-                                Forms\Components\TextInput::make('email')
-                                    ->label('Email')
-                                    ->localizeLabel()
-                                    ->unique()
-                                    ->email()
-                                    ->required()
-                                    ->maxLength(255),
+                                Section::make()
+                                    ->schema([
+                                        Placeholder::make('email')
+                                            ->content(fn($record): string => $record->email),
+                                    ]),
+                                Section::make()
+                                    ->schema([
+                                        Forms\Components\Select::make('roles')
+                                            ->relationship('roles', 'name')
+                                            ->preload()
+                                            ->searchable(),
+                                    ]),
                             ])->columnSpan(['lg' => 1]),
                     ])->columns(3)
             ])->columns(1);
@@ -187,8 +193,12 @@ class StaffResource extends Resource
                 ->label('Name')
                 ->localizeLabel()
                 ->required()
-                ->maxLength(255)
-                ->columnSpanFull(),
+                ->maxLength(255),
+            Forms\Components\Select::make('roles')
+                ->relationship('roles', 'name')
+                ->preload()
+                ->searchable()
+                ->default('2'),
             Forms\Components\TextInput::make('email')
                 ->label('Email')
                 ->localizeLabel()

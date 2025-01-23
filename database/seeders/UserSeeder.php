@@ -19,19 +19,25 @@ class UserSeeder extends Seeder
         User::factory()->create([
             'name' => 'Nunu',
             'email' => 'nunu@gmail.com',
-            'password' => 'nunu123',
+            'password' => 'password',
         ]);
 
         User::factory()->create([
             'name' => 'Nashir',
             'email' => 'nashir@gmail.com',
-            'password' => 'nashir123',
+            'password' => 'password',
         ]);
 
         User::factory()->create([
             'name' => 'Arif',
             'email' => 'arif@gmail.com',
-            'password' => 'arif123',
+            'password' => 'password',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@gmail.com',
+            'password' => 'password',
         ]);
     }
 }
