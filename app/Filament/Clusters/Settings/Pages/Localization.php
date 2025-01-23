@@ -24,10 +24,11 @@ use Filament\Forms\Concerns\InteractsWithForms;
 
 use Illuminate\Auth\Access\AuthorizationException;
 use App\Models\Setting\Localization as LocalizationModel;
+use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class Localization extends Page implements HasForms
 {
-    use InteractsWithForms, PageTranslate;
+    use InteractsWithForms, PageTranslate, HasPageShield;
 
     public ?array $data = [];
 

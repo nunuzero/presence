@@ -80,8 +80,8 @@ class AdminPanelProvider extends PanelProvider
                     ->shouldShowAvatarForm(
                         value: true,
                         directory: 'profile_image',
-                    )
-            ])
-            ;
+                    ),
+                \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make(),
+            ]);
     }
 }
