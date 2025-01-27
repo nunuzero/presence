@@ -10,7 +10,9 @@ class Presence extends Model
     protected $fillable = [
         'user_id',
         'presence_type_id',
-        'time',
+        'date',
+        'time_arrived',
+        'return_time'
     ];
 
     public function user(): BelongsTo

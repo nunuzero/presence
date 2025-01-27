@@ -44,14 +44,14 @@ class PresenceResource extends Resource
     {
         return $table
             ->groups([
-                Tables\Grouping\Group::make('time')
+                Tables\Grouping\Group::make('date')
                     ->label(translate('Day'))
                     ->date('d ' . translate('F') . ' t')
                     ->collapsible()
-                    ->orderQueryUsing(fn(Builder $query) => $query->orderBy('time', 'desc')),
+                    ->orderQueryUsing(fn(Builder $query) => $query->orderBy('date', 'desc')),
             ])
             ->groupingDirectionSettingHidden()
-            ->defaultGroup('time')
+            ->defaultGroup('date')
             ->columns([
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Name')
@@ -67,21 +67,30 @@ class PresenceResource extends Resource
                         'danger' => static fn($state): bool => $state === 'Sakit',
                         'violet' => static fn($state): bool => $state === 'Cuti',
                     ])
-                    ->icon(fn (string $state): string => match ($state) {
+                    ->icon(fn(string $state): string => match ($state) {
                         'WFO' => 'heroicon-o-building-office',
                         'WFH' => 'heroicon-o-home',
                         default => '',
                     }),
-                Tables\Columns\TextColumn::make('time')
-                    ->label('Time')
+                Tables\Columns\TextColumn::make('date')
+                    ->label('Date')
                     ->localizeLabel()
-                    ->dateTime()
-                    ->sortable(),
+                    ->date()
+                    ->sortable()
+                    ->hidden(),
+                Tables\Columns\TextColumn::make('time_arrived')
+                    ->label('Time Arrived')
+                    ->localizeLabel()
+                    ->time(),
+                Tables\Columns\TextColumn::make('return_time')
+                    ->label('Return Time')
+                    ->localizeLabel()
+                    ->time(),
             ])
             ->filters([
                 //
             ])
-            ->defaultSort('time', 'desc')
+            ->defaultSort('date', 'desc')
             ->actions([])
             ->bulkActions([]);
     }
