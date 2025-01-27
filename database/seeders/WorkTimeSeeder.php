@@ -17,14 +17,14 @@ class WorkTimeSeeder extends Seeder
     public function run()
     {
         $workTimes = [
-            ['day' => 'Minggu', 'is_workday' => '0', 'start_time' => null, 'end_time' => null],
-            ['day' => 'Senin', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
-            ['day' => 'Selasa', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
-            ['day' => 'Rabu', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
-            ['day' => 'Kamis', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
-            ['day' => 'Jum\'at', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
-            ['day' => 'Sabtu', 'is_workday' => '1', 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
-        ];
+            ['day' => 'Sunday', 'is_workday' => '0','time_limit' => 0, 'start_time' => null, 'end_time' => null],
+            ['day' => 'Monday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
+            ['day' => 'Tuesday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
+            ['day' => 'Wednesday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
+            ['day' => 'Thursday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
+            ['day' => 'Friday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
+            ['day' => 'Saturday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
+        ];        
 
         foreach ($workTimes as $workTime) {
             WorkTime::create($workTime);

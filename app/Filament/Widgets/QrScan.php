@@ -5,12 +5,12 @@ namespace App\Filament\Widgets;
 use App\Models\Staff;
 use App\Models\LogBook;
 use App\Models\Presence;
+use App\Models\Setting\WorkTime;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Concerns\InteractsWithForms;
 use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 
@@ -41,9 +41,51 @@ class QrScan extends Widget implements HasForms
             ->exists();
     }
 
+    public function hasReturnTimeToday()
+    {
+        return Presence::where('user_id', Auth::id())
+            ->whereDate('date', today())
+            ->whereNotNull('return_time')
+            ->exists();
+    }
+
     public function getStaff()
     {
         return Staff::where('user_id', Auth::id())->first();
+    }
+
+    public function getWorkTime()
+    {
+        $currentDay = today()->format('l');
+        return WorkTime::where('day', $currentDay)->first();
+    }
+
+    public function checkWorkdayConditions()
+    {
+        $workTime = $this->getWorkTime();
+
+        if (!$workTime || !$workTime->is_workday) {
+            return 'Hari ini bukan hari kerja';
+        }
+
+        $now = now();
+        $startTime = now()->setTimeFromTimeString($workTime->start_time);
+        $endTime = now()->setTimeFromTimeString($workTime->end_time);
+        $attendanceEndTime = $startTime->copy()->addMinutes($workTime->time_limit);
+
+        if ($now->lessThan($startTime)) {
+            return 'Absen akan dibuka pada jam ' . $startTime->format('H:i');
+        }
+
+        if ($now->greaterThan($attendanceEndTime) && !$this->hasAttendanceToday()) {
+            return 'Batas waktu absensi masuk telah berakhir';
+        }
+
+        if ($now->greaterThan($endTime) && !$this->hasAttendanceToday()) {
+            return 'Anda tidak hadir hari ini';
+        }
+
+        return null;
     }
 
     protected function getFormSchema(): array
@@ -78,13 +120,17 @@ class QrScan extends Widget implements HasForms
 
     protected function getViewData(): array
     {
+        $conditionMessage = $this->checkWorkdayConditions();
         $hasAttendance = $this->hasAttendanceToday();
         $hasLogBook = $this->hasFilledLogBookToday();
+        $hasReturnTime = $this->hasReturnTimeToday();
         $staff = $this->getStaff();
 
         return [
+            'conditionMessage' => $conditionMessage,
             'hasAttendance' => $hasAttendance,
             'hasLogBook' => $hasLogBook,
+            'hasReturnTime' => $hasReturnTime,
             'staff' => $staff,
         ];
     }
