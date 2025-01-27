@@ -22,7 +22,7 @@
                 <h1 class="text-3xl font-bold">Anda belum melakukan absensi kehadiran hari ini</h1>
                 <p>Scan Kode QR dibawah dan masuk ke link yang diberikan untuk melakukan absensi kehadiran</p>
                 <img class="mt-4" style="width: 200px; height: 200px;"
-                    src="{{ asset('qr/temp/staff_' . $staff->id . '_qrcode.png') }}" alt="QR Code for attendance">
+                    src="{{ asset('qr/temp/staff_' . $staff->id . '_qrcode.png') . '?' . now()->timestamp }}" alt="QR Code for attendance">
             </div>
         @elseif(!$hasLogBook)
             <form wire:submit.prevent="handleSubmit">
@@ -42,7 +42,7 @@
                 <h1 class="text-3xl font-bold">Anda belum melakukan absensi pulang hari ini</h1>
                 <p>Scan Kode QR dibawah dan masuk ke link yang diberikan untuk melakukan absensi pulang</p>
                 <img class="mt-4" style="width: 200px; height: 200px;"
-                    src="{{ asset('qr/temp/staff_' . $staff->id . '_qrcode.png') }}" alt="QR Code for attendance">
+                    src="{{ asset('qr/temp/staff_' . $staff->id . '_qrcode.png') . '?' . now()->timestamp }}" alt="QR Code for attendance">
             </div>
         @endif
     </x-filament::section>

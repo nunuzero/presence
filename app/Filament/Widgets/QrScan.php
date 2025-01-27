@@ -3,10 +3,11 @@
 namespace App\Filament\Widgets;
 
 use App\Models\Staff;
+use App\Models\Holiday;
 use App\Models\LogBook;
 use App\Models\Presence;
-use App\Models\Setting\WorkTime;
 use Filament\Widgets\Widget;
+use App\Models\Setting\WorkTime;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Textarea;
@@ -60,8 +61,18 @@ class QrScan extends Widget implements HasForms
         return WorkTime::where('day', $currentDay)->first();
     }
 
+    public function getHoliday()
+    {
+        return Holiday::whereDate('date', today())->first();
+    }
+
     public function checkWorkdayConditions()
     {
+        $holiday = $this->getHoliday();
+        if ($holiday && $holiday->is_national_holiday) {
+            return 'Hari ini adalah libur nasional: ' . $holiday->name;
+        }
+
         $workTime = $this->getWorkTime();
 
         if (!$workTime || !$workTime->is_workday) {
@@ -71,18 +82,25 @@ class QrScan extends Widget implements HasForms
         $now = now();
         $startTime = now()->setTimeFromTimeString($workTime->start_time);
         $endTime = now()->setTimeFromTimeString($workTime->end_time);
-        $attendanceEndTime = $startTime->copy()->addMinutes($workTime->time_limit);
+
+        if ($workTime->time_limit !== null) {
+            $attendanceEndTime = $startTime->copy()->addMinutes($workTime->time_limit);
+
+            if ($now->greaterThan($attendanceEndTime) && !$this->hasAttendanceToday()) {
+                return 'Batas waktu absensi masuk telah berakhir';
+            }
+        }
 
         if ($now->lessThan($startTime)) {
             return 'Absen akan dibuka pada jam ' . $startTime->format('H:i');
         }
 
-        if ($now->greaterThan($attendanceEndTime) && !$this->hasAttendanceToday()) {
-            return 'Batas waktu absensi masuk telah berakhir';
-        }
-
         if ($now->greaterThan($endTime) && !$this->hasAttendanceToday()) {
             return 'Anda tidak hadir hari ini';
+        }
+
+        if ($this->hasAttendanceToday() && $this->hasFilledLogBookToday() && $now->lessThan($endTime)) {
+            return 'Anda sudah melakukan absensi masuk dan mengisi logbook. Silakan tunggu hingga jam kerja selesai ('.$workTime->end_time.') untuk melakukan absensi pulang';
         }
 
         return null;
