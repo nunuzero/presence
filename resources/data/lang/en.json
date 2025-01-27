@@ -51,5 +51,9 @@
     "January": "January",
     "F": "F",
     "d": "d",
-    "Timezone": "Timezone"
+    "Timezone": "Timezone",
+    "Time_arrived": "Time_arrived",
+    "Return_time": "Return_time",
+    "Time Arrived": "Time Arrived",
+    "Return Time": "Return Time"
 }
