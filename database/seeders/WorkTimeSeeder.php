@@ -17,7 +17,7 @@ class WorkTimeSeeder extends Seeder
     public function run()
     {
         $workTimes = [
-            ['day' => 'Sunday', 'is_workday' => '0','time_limit' => 0, 'start_time' => null, 'end_time' => null],
+            ['day' => 'Sunday', 'is_workday' => '0','time_limit' => null, 'start_time' => null, 'end_time' => null],
             ['day' => 'Monday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
             ['day' => 'Tuesday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
             ['day' => 'Wednesday', 'is_workday' => '1','time_limit' => 30, 'start_time' => '08:00:00', 'end_time' => '17:00:00'],
