@@ -99,20 +99,24 @@ class WorkTimeResource extends Resource
                                     $set('end_time', null);
                                 }
                             }),
-                        Forms\Components\Select::make('time_limit')
-                            ->label('Time Limit')
-                            ->localizeLabel()
-                            ->options([
-                                '5' => '5 Minutes',
-                                '10' => '10 Minutes',
-                                '15' => '15 Minutes',
-                                '30' => '30 Minutes',
-                                '45' => '45 Minutes',
-                                '60' => '60 Minutes',
-                            ])
-                            ->disabled(fn($get) => !$get('is_workday'))
-                            ->required(fn($get) => $get('is_workday'))
-                            ->dehydrated(),
+                        Forms\Components\Section::make()
+                            ->description(translate('petunjuk: anda dapat mengosongkan nya jika tidak ada batasan'))
+                            ->schema([
+                                Forms\Components\Select::make('time_limit')
+                                    ->label('Time Limit')
+                                    ->localizeLabel()
+                                    ->options([
+                                        '5' => '5 Minutes',
+                                        '10' => '10 Minutes',
+                                        '15' => '15 Minutes',
+                                        '30' => '30 Minutes',
+                                        '45' => '45 Minutes',
+                                        '60' => '60 Minutes',
+                                    ])
+                                    ->disabled(fn($get) => !$get('is_workday'))
+                                    ->dehydrated()
+                                    ->native(false),
+                            ]),
                         Forms\Components\Section::make()
                             ->description(translate('hint: start time cannot be earlier or equal to end time'))
                             ->schema([
