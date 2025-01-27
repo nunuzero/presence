@@ -1,4 +1,4 @@
-<x-filament-widgets::widget>
+<x-filament-widgets::widget wire:poll.20s>
     <x-filament::section>
         @php
             $qrCodePath = public_path('qr/temp/staff_' . $staff->id . '_qrcode.png');
