@@ -4,24 +4,31 @@
             $qrCodePath = public_path('qr/temp/staff_' . $staff->id . '_qrcode.png');
         @endphp
 
-        @if (!file_exists($qrCodePath))
+        @if ($conditionMessage)
             <div class="flex flex-col items-center justify-center text-center space-y-4">
-                <h1 class="text-3xl font-bold">QR Code Not Available</h1>
-                <p>The QR code for this staff member is not generated yet. Please contact the administrator.</p>
+                <h1 class="text-3xl font-bold">{{ $conditionMessage }}</h1>
             </div>
-        @elseif ($hasAttendance && $hasLogBook)
+        @elseif (!file_exists($qrCodePath))
             <div class="flex flex-col items-center justify-center text-center space-y-4">
-                <h1 class="text-3xl font-bold">Done for today</h1>
+                <h1 class="text-3xl font-bold">Kode QR untuk anda belum tersedia</h1>
+                <p>Silahkan tunggu beberapa saat untuk pembuatan Kode QR otomatis</p>
+            </div>
+        @elseif ($hasReturnTime)
+            <div class="flex flex-col items-center justify-center text-center space-y-4">
+                <h1 class="text-3xl font-bold">Terima Kasih atas kehadiran anda hari ini</h1>
             </div>
         @elseif (!$hasAttendance)
             <div class="flex flex-col items-center justify-center text-center space-y-4">
-                <h1 class="text-3xl font-bold">You haven't taken attendance today</h1>
-                <p>Scan the QR code below and enter the link provided to take attendance</p>
+                <h1 class="text-3xl font-bold">Anda belum melakukan absensi kehadiran hari ini</h1>
+                <p>Scan Kode QR dibawah dan masuk ke link yang diberikan untuk melakukan absensi kehadiran</p>
                 <img class="mt-4" style="width: 200px; height: 200px;"
                     src="{{ asset('qr/temp/staff_' . $staff->id . '_qrcode.png') }}" alt="QR Code for attendance">
             </div>
         @elseif(!$hasLogBook)
             <form wire:submit.prevent="handleSubmit">
+                <h1 class="text-3xl font-bold">List Pekerjaan</h1>
+                <p>Buat list perkejaan yang anda lakukan hari ini, barulah anda bisa melakukan absensi pulang</p>
+                <br>
                 {{ $this->form }}
 
                 <div class="mt-4">
@@ -32,8 +39,8 @@
             </form>
         @else
             <div class="flex flex-col items-center justify-center text-center space-y-4">
-                <h1 class="text-3xl font-bold">You have completed attendance and logbook today</h1>
-                <p>Scan the QR code below if you need to redo attendance</p>
+                <h1 class="text-3xl font-bold">Anda belum melakukan absensi pulang hari ini</h1>
+                <p>Scan Kode QR dibawah dan masuk ke link yang diberikan untuk melakukan absensi pulang</p>
                 <img class="mt-4" style="width: 200px; height: 200px;"
                     src="{{ asset('qr/temp/staff_' . $staff->id . '_qrcode.png') }}" alt="QR Code for attendance">
             </div>

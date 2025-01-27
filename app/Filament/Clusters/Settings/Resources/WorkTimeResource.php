@@ -20,7 +20,7 @@ use App\Helper\ClusterResourceTranslate;
 
 class WorkTimeResource extends Resource
 {
-    use ClusterResourceTranslate; 
+    use ClusterResourceTranslate;
 
     protected static ?string $model = WorkTime::class;
 
@@ -44,6 +44,11 @@ class WorkTimeResource extends Resource
                     ->trueColor('success')
                     ->falseColor('danger')
                     ->boolean(),
+                Tables\Columns\TextColumn::make('time_limit')
+                    ->label('Time Limit')
+                    ->suffix(function ($record) {
+                        return $record->time_limit > 1 ? ' Minutes' : ' Minute';
+                    }),
                 Tables\Columns\TextColumn::make('start_time')
                     ->label('Start Time')
                     ->localizeLabel()
@@ -89,12 +94,25 @@ class WorkTimeResource extends Resource
                             ->reactive()
                             ->afterStateUpdated(function (Set $set, $state) {
                                 if (!$state) {
+                                    $set('time_limit', null);
                                     $set('start_time', null);
                                     $set('end_time', null);
                                 }
                             }),
-
-
+                        Forms\Components\Select::make('time_limit')
+                            ->label('Time Limit')
+                            ->localizeLabel()
+                            ->options([
+                                '5' => '5 Minutes',
+                                '10' => '10 Minutes',
+                                '15' => '15 Minutes',
+                                '30' => '30 Minutes',
+                                '45' => '45 Minutes',
+                                '60' => '60 Minutes',
+                            ])
+                            ->disabled(fn($get) => !$get('is_workday'))
+                            ->required(fn($get) => $get('is_workday'))
+                            ->dehydrated(),
                         Forms\Components\Section::make()
                             ->description(translate('hint: start time cannot be earlier or equal to end time'))
                             ->schema([

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('day');
             $table->boolean('is_workday');
+            $table->integer('time_limit')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->timestamps();
