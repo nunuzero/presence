@@ -80,4 +80,9 @@ class User extends Authenticatable implements HasAvatar
     {
         return $this->hasOne(Staff::class);
     }
+
+    public function requests(): HasMany
+    {
+        return $this->hasMany(Request::class);
+    }
 }

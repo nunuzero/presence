@@ -62,11 +62,11 @@ class ListPresences extends ListRecords
                     $formattedEndDate = $endDateCarbon->day . ' ' . translate($endDateCarbon->format('F')) . ' ' . $endDateCarbon->year;
 
                     $presences = Presence::with(['user', 'presenceType'])
-                        ->whereBetween('time', [$startDateCarbon->toDateTimeString(), $endDateCarbon->toDateTimeString()])
+                        ->whereBetween('date', [$startDateCarbon->toDateTimeString(), $endDateCarbon->toDateTimeString()])
                         ->get()
                         ->groupBy(function ($presence) {
-                            $month = Carbon2::parse($presence->time)->format('F');
-                            $year = Carbon2::parse($presence->time)->format('Y');
+                            $month = Carbon2::parse($presence->date)->format('F');
+                            $year = Carbon2::parse($presence->date)->format('Y');
                             return __(':month :year', ['month' => translate($month), 'year' => $year]);
                         })
                         ->map(function ($groupByMonth) {

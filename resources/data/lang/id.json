@@ -52,5 +52,22 @@
     "December": "Desember",
     "From Date:": "Dari Tanggal:",
     "To:": "Sampai:",
-    "Timezone": "Zona Waktu"
+    "Timezone": "Zona Waktu",
+    "Details": "Detail",
+    "Request": "Permintaan",
+    "Subject": "Perihal",
+    "Status": "Status",
+    "hint: To cannot be earlier than From Date": "petunjuk: Sampai tidak bisa lebih kecil dari Dari Tanggal",
+    "Staff Name": "Nama Karyawan",
+    "Cancel": "Batal",
+    "Cancel Request": "Batalkan Permintaan",
+    "Canceling will also delete the Request, Are you sure you want to do this?": "Membatalkan juga akan mengapus Permintaan, Apakah Anda yakin ingin melakukan ini?",
+    "Requested At": "Diajukan Pada",
+    "Approval": "Persetujuan",
+    "Accept": "Terima",
+    "Reject": "Tolak",
+    "Accept Request": "Terima Permintaan",
+    "Reject Request": "Tolak Permintaan",
+    "Accepting/Rejecting can only be done once and cannot be changed afterwards, are you sure you want to do this?": "Menerima/Menolak hanya bisa dilakukan sekali dan tidak bisa diubah setelahnya, Apakah Anda yakin ingin melakukan ini?",
+    "Approval Response Given At": "Respon Persetujuan Diberikan Pada"
 }
