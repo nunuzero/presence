@@ -69,5 +69,9 @@
     "Accept Request": "Terima Permintaan",
     "Reject Request": "Tolak Permintaan",
     "Accepting/Rejecting can only be done once and cannot be changed afterwards, are you sure you want to do this?": "Menerima/Menolak hanya bisa dilakukan sekali dan tidak bisa diubah setelahnya, Apakah Anda yakin ingin melakukan ini?",
-    "Approval Response Given At": "Respon Persetujuan Diberikan Pada"
+    "Approval Response Given At": "Respon Persetujuan Diberikan Pada",
+    "Remaining Leave": "Cuti Tersisa",
+    "Year": "Tahun",
+    "Month": "Bulan",
+    "Leave": "Cuti"
 }

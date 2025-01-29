@@ -28,6 +28,19 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->navigationGroups([
+                'Settings',
+                'Request',
+                'Presence',
+                'Management',
+                'Filament Shield',
+
+                'Pengaturan',
+                'Permintaan',
+                'Presensi',
+                'Manajemen',
+                'Pelindung',
+            ])
             ->default()
             ->id('admin')
             ->path('admin')
@@ -46,8 +59,6 @@ class AdminPanelProvider extends PanelProvider
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
             ])
-            ->databaseNotifications()
-            ->databaseNotificationsPolling('20s')
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
