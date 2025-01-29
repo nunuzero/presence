@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\Leave;
 use App\Models\Staff;
 use App\Models\Holiday;
 use Endroid\QrCode\Builder\Builder;
@@ -73,3 +74,28 @@ Artisan::command('holidays:fetch', function() {
         $this->error('Error: ' . $e->getMessage());
     }
 })->purpose('Fetch holidays data from API')->monthlyOn(1, '00:00');
+
+Artisan::command('leave:generate-allocation', function () {
+    $currentYear = Carbon::now()->year;
+    $currentMonth = Carbon::now()->month;
+
+    $staffList = Staff::all();
+
+    foreach ($staffList as $staff) {
+        $leaveAllocation = $staff->position->leave_allocation;
+
+        Leave::updateOrCreate(
+            [
+                'staff_id' => $staff->id,
+                'year' => $currentYear,
+                'month' => $currentMonth
+            ],
+            [
+                'leave_allocation' => $leaveAllocation,
+                'remaining_leave' => $leaveAllocation,
+            ]
+        );
+    }
+
+    $this->info('Leave allocation data has been successfully generated for this month.');
+})->purpose('Generate monthly leave allocation data for all staff')->monthlyOn(1, '00:00');

@@ -78,5 +78,10 @@
     "Accepting\/Rejecting can only be done once and cannot be changed afterwards, are you sure you want to do this?": "Accepting\/Rejecting can only be done once and cannot be changed afterwards, are you sure you want to do this?",
     "Reject": "Reject",
     "Reject Request": "Reject Request",
-    "Approval Response Given At": "Approval Response Given At"
+    "Approval Response Given At": "Approval Response Given At",
+    "Filament Shield": "Filament Shield",
+    "Leave": "Leave",
+    "Remaining Leave": "Remaining Leave",
+    "Year": "Year",
+    "Month": "Month"
 }
