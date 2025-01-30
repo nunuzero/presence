@@ -93,5 +93,7 @@
     "Friday": "Friday",
     "Saturday": "Saturday",
     "Sunday": "Sunday",
-    "Monday": "Monday"
+    "Monday": "Monday",
+    "Edit Work Time": "Edit Work Time",
+    "hint: you can leave it blank if there is no time limit": "hint: you can leave it blank if there is no time limit"
 }
