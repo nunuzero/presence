@@ -74,5 +74,13 @@
     "Year": "Tahun",
     "Month": "Bulan",
     "Leave": "Cuti",
-    "Create Sick Presence": "Buat Presensi Sakit"
+    "Create Sick Presence": "Buat Presensi Sakit",
+    "Monday": "Senin",
+    "Tuesday": "Selasa",
+    "Wednesday": "Rabu",
+    "Thursday": "Kamis",
+    "Friday": "Jum'at",
+    "Saturday": "Sabtu",
+    "Sunday": "Minggu",
+    "Staff WFH Schedule": "Jadwal WFH Karyawan"
 }

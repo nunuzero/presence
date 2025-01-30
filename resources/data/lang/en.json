@@ -85,5 +85,13 @@
     "Year": "Year",
     "Month": "Month",
     "Sick Presence": "Sick Presence",
-    "Create Sick Presence": "Create Sick Presence"
+    "Create Sick Presence": "Create Sick Presence",
+    "Staff WFH Schedule": "Staff WFH Schedule",
+    "Tuesday": "Tuesday",
+    "Wednesday": "Wednesday",
+    "Thursday": "Thursday",
+    "Friday": "Friday",
+    "Saturday": "Saturday",
+    "Sunday": "Sunday",
+    "Monday": "Monday"
 }

@@ -85,4 +85,9 @@ class User extends Authenticatable implements HasAvatar
     {
         return $this->hasMany(Request::class);
     }
+
+    public function wfhSchedule(): HasOne
+    {
+        return $this->hasOne(WfhSchedule::class);
+    }
 }
