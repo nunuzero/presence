@@ -95,5 +95,9 @@
     "Sunday": "Sunday",
     "Monday": "Monday",
     "Edit Work Time": "Edit Work Time",
-    "hint: you can leave it blank if there is no time limit": "hint: you can leave it blank if there is no time limit"
+    "hint: you can leave it blank if there is no time limit": "hint: you can leave it blank if there is no time limit",
+    "Sign In": "Sign In",
+    "Image": "Image",
+    "Logo": "Logo",
+    "Login Background": "Login Background"
 }
