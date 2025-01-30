@@ -12,12 +12,15 @@ use Endroid\QrCode\RoundBlockSizeMode;
 use Illuminate\Support\Facades\Artisan;
 use Endroid\QrCode\ErrorCorrectionLevel;
 
-Artisan::command('qrcode:generate', function() {
+Artisan::command('qrcode:generate', function () {
     $staffList = Staff::all();
 
     foreach ($staffList as $staff) {
         $token = md5(uniqid(rand(), true));
-        
+
+        // Simpan token dengan status 'unused' dan waktu kedaluwarsa
+        cache()->put("attendance_token_{$staff->id}", $token, now()->addMinutes(5));  // 5 menit valid
+
         $builder = new Builder(
             writer: new PngWriter(),
             writerOptions: [],
@@ -34,28 +37,26 @@ Artisan::command('qrcode:generate', function() {
 
         $fileName = "qr/temp/staff_{$staff->id}_qrcode.png";
         $result->saveToFile(public_path($fileName));
-
-        cache()->put("attendance_token_{$staff->id}", $token, now()->addMinutes(5));
     }
 
     $this->info('QR Codes generated successfully for all staff.');
 })->purpose('Generate QR code for attendance for each staff')->everyFiveMinutes();
 
 
-Artisan::command('holidays:fetch', function() {
+Artisan::command('holidays:fetch', function () {
     try {
         $currentMonth = Carbon::now()->format('m');
-        
+
         $response = Http::get("https://api-harilibur.vercel.app/api", [
             'month' => $currentMonth
         ]);
 
         if ($response->successful()) {
             $holidays = $response->json();
-            
+
             foreach ($holidays as $holiday) {
                 $holidayDate = Carbon::parse($holiday['holiday_date']);
-                
+
                 Holiday::updateOrCreate(
                     ['date' => $holidayDate],
                     [
@@ -65,7 +66,7 @@ Artisan::command('holidays:fetch', function() {
                     ]
                 );
             }
-            
+
             $this->info('Holidays data has been successfully fetched and stored.');
         } else {
             $this->error('Failed to fetch data from API.');
@@ -100,27 +101,27 @@ Artisan::command('leave:generate-allocation', function () {
     $this->info('Leave allocation data has been successfully generated for this month.');
 })->purpose('Generate monthly leave allocation data for all staff')->monthlyOn(1, '00:00');
 
-Artisan::command('wfh:check', function() {
+Artisan::command('wfh:check', function () {
     $today = Carbon::now()->format('l');
 
     $wfhSchedules = \App\Models\WfhSchedule::where($today, true)->get();
 
     foreach ($wfhSchedules as $schedule) {
         $user = $schedule->user;
-        
+
         $existingPresence = \App\Models\Presence::where('user_id', $user->id)
-                                                ->where('date', Carbon::today()->toDateString())
-                                                ->first();
+            ->where('date', Carbon::today()->toDateString())
+            ->first();
 
         if (!$existingPresence) {
             $presenceType = \App\Models\PresenceType::where('type', 'WFH')->first();
-            
+
             \App\Models\Presence::create([
                 'user_id' => $user->id,
                 'presence_type_id' => $presenceType->id,
                 'date' => Carbon::today()->toDateString(),
                 'time_arrived' => null,
-                'return_time' => null, 
+                'return_time' => null,
             ]);
 
             $this->info("Presence created for user: {$user->name} for WFH today.");

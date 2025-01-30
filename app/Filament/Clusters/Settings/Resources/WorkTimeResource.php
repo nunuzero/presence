@@ -46,6 +46,7 @@ class WorkTimeResource extends Resource
                     ->boolean(),
                 Tables\Columns\TextColumn::make('time_limit')
                     ->label('Time Limit')
+                    ->localizeLabel()
                     ->suffix(function ($record) {
                         return $record->time_limit > 1 ? ' Minutes' : ' Minute';
                     }),
@@ -75,7 +76,7 @@ class WorkTimeResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->modalHeading('Edit Work Time')
+                    ->modalHeading(translate('Edit Work Time'))
                     ->modalWidth('lg')
                     ->form([
                         Forms\Components\TextInput::make('day')
@@ -100,7 +101,7 @@ class WorkTimeResource extends Resource
                                 }
                             }),
                         Forms\Components\Section::make()
-                            ->description(translate('petunjuk: anda dapat mengosongkan nya jika tidak ada batasan'))
+                            ->description(translate('hint: you can leave it blank if there is no time limit'))
                             ->schema([
                                 Forms\Components\Select::make('time_limit')
                                     ->label('Time Limit')

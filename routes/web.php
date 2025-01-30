@@ -2,6 +2,7 @@
 
 use App\Models\Staff;
 use App\Models\Presence;
+use App\Models\PresenceType;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Filament\Http\Middleware\Authenticate;
@@ -13,62 +14,56 @@ Route::get('/', function () {
 Route::get('/attendance/verify/{token}/{staff_id}', function ($token, $staff_id) {
     $now = now();
 
-    // Ambil token valid dari cache berdasarkan staff_id
-    $validToken = Cache::get("attendance_token_{$staff_id}");
+    $validToken = cache()->get("attendance_token_{$staff_id}");
 
-    // Cari data staff berdasarkan ID
+    if ($token !== $validToken) {
+        return redirect()->route('attendance.error', ['status' => 'invalid_token']);
+    }
+
     $staff = Staff::find($staff_id);
     if (!$staff) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Invalid staff ID',
-        ], 404);
+        return redirect()->route('attendance.error', ['status' => 'invalid_staff']);
     }
 
-    // Periksa apakah token valid
-    if ($token !== $validToken) {
-        return response()->json([
-            'status' => 'invalid',
-            'message' => 'Invalid or expired token',
-        ], 400);
-    }
+    cache()->forget("attendance_token_{$staff->id}");
 
-    // Periksa apakah sudah ada entri kehadiran untuk tanggal hari ini
     $existingPresence = Presence::where('user_id', $staff->user_id)
         ->whereDate('date', today())
         ->first();
 
     if ($existingPresence) {
-        // Jika kolom return_time masih kosong, perbarui dengan waktu sekarang
         if (is_null($existingPresence->return_time)) {
             $existingPresence->update([
                 'return_time' => $now->toTimeString(),
             ]);
-
-            return response()->json([
-                'message' => 'Return time updated successfully',
-                'data' => $existingPresence,
+            return redirect()->route('attendance.success', [
+                'status' => 'return',
+                'time' => $existingPresence->return_time
             ]);
         }
 
-        // Jika return_time sudah terisi, kembalikan pesan error
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Attendance already fully recorded for this user today',
-            'data' => $existingPresence,
-        ], 400);
+        return redirect()->route('attendance.error', ['status' => 'attendance_full']);
     }
 
-    // Buat entri kehadiran baru
+    $presenceType = PresenceType::where('type', 'WFO')->first();
+
     $presence = Presence::create([
         'user_id' => $staff->user_id,
-        'presence_type_id' => 1, // ID untuk tipe kehadiran, sesuaikan kebutuhan
+        'presence_type_id' => $presenceType->id,
         'date' => $now->toDateString(),
         'time_arrived' => $now->toTimeString(),
     ]);
 
-    return response()->json([
-        'message' => 'Attendance recorded successfully',
-        'data' => $presence,
+    return redirect()->route('attendance.success', [
+        'status' => 'success',
+        'time' => $presence->time_arrived
     ]);
 })->name('attendance.verify');
+
+Route::get('/attendance/success/{status}/{time}', function ($status, $time) {
+    return view('attendance.success', compact('status', 'time'));
+})->name('attendance.success');
+
+Route::get('/attendance/error/{status}', function ($status) {
+    return view('attendance.error', compact('status'));
+})->name('attendance.error');
