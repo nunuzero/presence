@@ -23,7 +23,7 @@ class ListPresences extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('modal')
+            Actions\Action::make('report')
                 ->label(translate('PDF Report'))
                 ->icon('heroicon-o-document')
                 ->modalSubmitActionLabel(translate('Create'))

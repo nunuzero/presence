@@ -2,17 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PresenceResource\Pages;
-use App\Filament\Resources\PresenceResource\RelationManagers;
-use App\Helper\ResourceTranslate;
-use App\Models\Presence;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use App\Models\Presence;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Helper\ResourceTranslate;
+use Filament\Tables\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\PresenceResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PresenceResource\RelationManagers;
 
 class PresenceResource extends Resource
 {
@@ -26,23 +30,62 @@ class PresenceResource extends Resource
 
     protected static ?string $title = 'Presence';
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
-                Forms\Components\Select::make('presence_type_id')
-                    ->relationship('presenceType', 'id')
-                    ->required(),
-                Forms\Components\DateTimePicker::make('time'),
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Action::make('create_sick_presence')
+                    ->label(translate('Create Sick Presence'))
+                    ->icon('heroicon-o-clipboard-document-list')
+                    ->modalSubmitActionLabel(translate('Create'))
+                    ->modalHeading(translate('Create Sick Presence'))
+                    ->form([
+                        Select::make('user_id')
+                            ->label('Staff Name')
+                            ->localizeLabel()
+                            ->options(User::all()->pluck('name', 'id'))
+                            ->searchable(),
+                        Section::make()
+                            ->description(translate('hint: To cannot be earlier than From Date'))
+                            ->schema([
+                                Forms\Components\DatePicker::make('start_date')
+                                    ->label('From Date')
+                                    ->localizeLabel()
+                                    ->native(false)
+                                    ->required(),
+                                Forms\Components\DatePicker::make('end_date')
+                                    ->label('To')
+                                    ->localizeLabel()
+                                    ->native(false)
+                                    ->required()
+                                    ->afterOrEqual('start_date'),
+                            ])->columns(),
+                    ])
+                    ->action(function (array $data) {
+                        $presenceType = \App\Models\PresenceType::where('type', 'Sakit')->first();
+                
+                        if (!$presenceType) {
+                            return;
+                        }
+                
+                        $startDate = \Carbon\Carbon::parse($data['start_date']);
+                        $endDate = \Carbon\Carbon::parse($data['end_date']);
+                        $userId = $data['user_id'];
+                
+                        $currentDate = $startDate;
+                
+                        while ($currentDate <= $endDate) {
+                            \App\Models\Presence::create([
+                                'user_id' => $userId,
+                                'presence_type_id' => $presenceType->id,
+                                'date' => $currentDate->format('Y-m-d'),
+                                'time_arrived' => null,
+                                'return_time' => null,
+                            ]);
+                            $currentDate->addDay();
+                        }
+                    }),
+            ])
             ->groups([
                 Tables\Grouping\Group::make('date')
                     ->label(translate('Day'))

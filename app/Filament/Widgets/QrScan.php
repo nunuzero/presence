@@ -74,9 +74,20 @@ class QrScan extends Widget implements HasForms
         }
 
         $workTime = $this->getWorkTime();
-
         if (!$workTime || !$workTime->is_workday) {
             return 'Hari ini bukan hari kerja';
+        }
+
+        $presenceToday = Presence::where('user_id', Auth::id())
+            ->whereDate('date', today())
+            ->first();
+
+        if ($presenceToday) {
+            $presenceType = $presenceToday->presenceType->type;
+
+            if ($presenceType !== 'WFO') {
+                return 'Anda sedang dalam status ' . $presenceType . ' hari ini, Tidak perlu melakukan absensi';
+            }
         }
 
         $now = now();
@@ -100,11 +111,12 @@ class QrScan extends Widget implements HasForms
         }
 
         if ($this->hasAttendanceToday() && $this->hasFilledLogBookToday() && $now->lessThan($endTime)) {
-            return 'Anda sudah melakukan absensi masuk dan mengisi logbook. Silakan tunggu hingga jam kerja selesai ('.$workTime->end_time.') untuk melakukan absensi pulang';
+            return 'Anda sudah melakukan absensi masuk dan mengisi logbook. Silakan tunggu hingga jam kerja selesai (' . $workTime->end_time . ') untuk melakukan absensi pulang';
         }
 
         return null;
     }
+
 
     protected function getFormSchema(): array
     {
