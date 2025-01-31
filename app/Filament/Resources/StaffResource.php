@@ -93,6 +93,7 @@ class StaffResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->query(User::where('name', '!=', 'Admin'))
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Name')
