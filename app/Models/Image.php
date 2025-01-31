@@ -14,16 +14,16 @@ class Image extends Model
 
     protected static function booted(): void
     {
-        static::updating(function ($user) {
-            $originalImage = $user->getOriginal('logo');
-            $originalImage2 = $user->getOriginal('login_background');
-            
-            if ($originalImage && Storage::disk('logo')->exists($originalImage)) {
-                Storage::disk('logo')->delete($originalImage);
+        static::updating(function ($image) {
+            $originalLogo = $image->getOriginal('logo');
+            $originalLoginBackground = $image->getOriginal('login_background');
+    
+            if ($originalLogo && $image->isDirty('logo') && Storage::disk('public')->exists($originalLogo)) {
+                Storage::disk('public')->delete($originalLogo);
             }
-
-            if ($originalImage2 && Storage::disk('login_background')->exists($originalImage2)) {
-                Storage::disk('login_background')->delete($originalImage2);
+    
+            if ($originalLoginBackground && $image->isDirty('login_background') && Storage::disk('public')->exists($originalLoginBackground)) {
+                Storage::disk('public')->delete($originalLoginBackground);
             }
         });
     }
