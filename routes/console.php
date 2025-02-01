@@ -143,7 +143,7 @@ Artisan::command('wfh:check', function () {
 })->purpose('Pengecekan dan pembuatan presensi WFH untuk users yang dijadwalkan dan belum absen')->daily();
 
 
-Artisan::command('attendance:check-missing', function () {
+Artisan::command('tidak-masuk:check', function () {
     $today = Carbon::today();
     $dayOfWeek = $today->format('l');
     
