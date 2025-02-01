@@ -45,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         FilamentColor::register([
             'sky' => Color::Sky,
             'violet' => Color::Violet,
+            'slate' => Color::Slate,
         ]);
     }
 }

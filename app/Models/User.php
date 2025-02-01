@@ -76,6 +76,11 @@ class User extends Authenticatable implements HasAvatar
         return $this->hasMany(Presence::class);
     }
 
+    public function logBook(): HasMany
+    {
+        return $this->hasMany(LogBook::class);
+    }
+
     public function staff(): HasOne
     {
         return $this->hasOne(Staff::class);

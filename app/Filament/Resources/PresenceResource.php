@@ -107,8 +107,9 @@ class PresenceResource extends Resource
                     ->colors([
                         'success' => static fn($state): bool => $state === 'WFO' || $state === 'WFH',
                         'sky' => static fn($state): bool => $state === 'Izin',
-                        'danger' => static fn($state): bool => $state === 'Sakit',
-                        'violet' => static fn($state): bool => $state === 'Cuti',
+                        'violet' => static fn($state): bool => $state === 'Sakit',
+                        'slate' => static fn($state): bool => $state === 'Cuti',
+                        'danger' => static fn($state): bool => $state === 'Tidak Masuk',
                     ])
                     ->icon(fn(string $state): string => match ($state) {
                         'WFO' => 'heroicon-o-building-office',

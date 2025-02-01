@@ -1,24 +1,22 @@
 <?php
 
-namespace App\Filament\Resources\PresenceResource\Pages;
+namespace App\Filament\Resources\LogBookResource\Pages;
 
-use Carbon\Carbon;
-use Illuminate\Support\Carbon as Carbon2;
 use Filament\Actions;
-use App\Models\Presence;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Forms\Components\Split;
-use Illuminate\Support\Facades\Blade;
-use Filament\Resources\Components\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\ListRecords;
-use App\Filament\Resources\PresenceResource;
-use Filament\Forms\Components\Actions\Action;
+use App\Filament\Resources\LogBookResource;
+use App\Models\LogBook;
+use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Carbon as Carbon2;
 
-class ListPresences extends ListRecords
+class ListLogBooks extends ListRecords
 {
-    protected static string $resource = PresenceResource::class;
+    protected static string $resource = LogBookResource::class;
 
     protected function getHeaderActions(): array
     {
@@ -61,35 +59,35 @@ class ListPresences extends ListRecords
                     $formattedStartDate = $startDateCarbon->day . ' ' . translate($startDateCarbon->format('F')) . ' ' . $startDateCarbon->year;
                     $formattedEndDate = $endDateCarbon->day . ' ' . translate($endDateCarbon->format('F')) . ' ' . $endDateCarbon->year;
 
-                    $presences = Presence::with(['user', 'presenceType'])
-                        ->whereBetween('date', [$startDateCarbon->toDateTimeString(), $endDateCarbon->toDateTimeString()])
+                    $logBook = LogBook::whereBetween('date', [$startDateCarbon, $endDateCarbon])
+                        ->orderBy('date')
                         ->get()
-                        ->groupBy(function ($presence) {
-                            $month = Carbon2::parse($presence->date)->format('F');
-                            $year = Carbon2::parse($presence->date)->format('Y');
+                        ->groupBy(function ($log) {
+                            $month = Carbon2::parse($log->date)->format('F');
+                            $year = Carbon2::parse($log->date)->format('Y');
                             return __(':month :year', ['month' => translate($month), 'year' => $year]);
                         })
                         ->map(function ($groupByMonth) {
-                            return $groupByMonth->groupBy('user_id')->map(function ($userPresences) {
-                                $types = ['WFO', 'WFH', 'Izin', 'Sakit', 'Cuti', 'Tidak Masuk'];
-                                $summary = array_fill_keys($types, 0);
+                            return $groupByMonth->groupBy('user_id')->map(function ($userLogs) {
+                                $workSummary = [];
+                                $createdAt = $userLogs->first()->created_at;
 
-                                foreach ($userPresences as $presence) {
-                                    $type = $presence->presenceType->type ?? 'Tidak Masuk';
-                                    $summary[$type]++;
+                                foreach ($userLogs as $log) {
+                                    $workSummary[] = nl2br(e($log->work));
                                 }
 
                                 return [
-                                    'user_name' => $userPresences->first()->user->name ?? 'Unknown',
-                                    'summary' => $summary,
+                                    'user_name' => $userLogs->first()->user->name ?? 'Unknown',
+                                    'logs' => $workSummary,
+                                    'created_at' => $createdAt,
                                 ];
                             });
                         });
 
-                    return response()->streamDownload(function () use ($name, $presences, $formattedStartDate, $formattedEndDate) {
+                    return response()->streamDownload(function () use ($name, $logBook, $formattedStartDate, $formattedEndDate) {
                         echo Pdf::loadHtml(
-                            Blade::render('pdf.presence', [
-                                'presences' => $presences,
+                            Blade::render('pdf.logbook', [
+                                'logBook' => $logBook,
                                 'name' => $name,
                                 'startDate' => $formattedStartDate,
                                 'endDate' => $formattedEndDate,
@@ -99,20 +97,6 @@ class ListPresences extends ListRecords
                         )->stream();
                     }, $name . '.pdf');
                 }),
-        ];
-    }
-
-
-    public function getTabs(): array
-    {
-        return [
-            null => Tab::make(translate('All')),
-            'WFO' => Tab::make('WFO')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'WFO'))),
-            'WFH' => Tab::make('WFH')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'WFH'))),
-            'Izin' => Tab::make('Izin')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Izin'))),
-            'Sakit' => Tab::make('Sakit')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Sakit'))),
-            'Cuti' => Tab::make('Cuti')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Cuti'))),
-            'Tidak Masuk' => Tab::make('Tidak Masuk')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Tidak Masuk'))),
         ];
     }
 }

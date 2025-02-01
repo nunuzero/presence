@@ -22,6 +22,7 @@ class PresenceTypeSeeder extends Seeder
             ['type' => 'Izin', 'value' => '2'],
             ['type' => 'Sakit', 'value' => '2'],
             ['type' => 'Cuti', 'value' => '1'],
+            ['type' => 'Tidak Masuk', 'value' => '0'],
         ];
 
         foreach ($presenceTypes as $presenceType) {
