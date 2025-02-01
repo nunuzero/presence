@@ -9,10 +9,13 @@ use App\Models\Presence;
 use Illuminate\Support\HtmlString;
 use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use BezhanSalleh\FilamentShield\Traits\HasWidgetShield;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class StatsOverview extends BaseWidget
 {
+    use HasWidgetShield;
+    
     protected static ?string $pollingInterval = '20s';
 
     protected function getHeading(): ?string
