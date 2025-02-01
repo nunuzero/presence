@@ -30,7 +30,7 @@ class LogBookResource extends Resource
 
     protected static ?string $navigationGroup = 'Presence';
 
-    protected static ?string $title = 'Log Book';
+    protected static ?string $title = 'Logbook';
 
     public static function table(Table $table): Table
     {

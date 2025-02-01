@@ -91,6 +91,15 @@
     "Login Background": "Latar Belakang Login",
     "Image": "Gambar",
     "List All Staff": "Daftar Semua Karyawan",
-    "Log Book": "Buku Kegiatan",
-    "Work": "Pekerjaan"
+    "Logbook": "Buku Kegiatan",
+    "Work": "Pekerjaan",
+    "Total staff": "Jumlah karyawan",
+    "Today's presence": "Kehadiran hari ini",
+    "Logbook filled out today": "Buku kegiatan diisi hari ini",
+    "Today's absent": "Tidak hadir hari ini",
+    "Earliest arriving staff": "Karyawan yang datang paling awal",
+    "Last arriving staff": "Karyawan yang datang terakhir",
+    "Arrived at: ": "Tiba pada pukul: ",
+    "None yet": "Belum ada",
+    "Staff Presence": "Kehadiran Karyawan"
 }
