@@ -88,7 +88,7 @@ class ListPresences extends ListRecords
 
                     return response()->streamDownload(function () use ($name, $presences, $formattedStartDate, $formattedEndDate) {
                         echo Pdf::loadHtml(
-                            Blade::render('pdf.simple', [
+                            Blade::render('pdf.presence', [
                                 'presences' => $presences,
                                 'name' => $name,
                                 'startDate' => $formattedStartDate,
@@ -112,6 +112,7 @@ class ListPresences extends ListRecords
             'Izin' => Tab::make('Izin')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Izin'))),
             'Sakit' => Tab::make('Sakit')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Sakit'))),
             'Cuti' => Tab::make('Cuti')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Cuti'))),
+            'Tidak Masuk' => Tab::make('Tidak Masuk')->query(fn($query) => $query->whereHas('presenceType', fn($q) => $q->where('type', 'Tidak Masuk'))),
         ];
     }
 }

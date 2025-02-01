@@ -4,6 +4,10 @@ use Carbon\Carbon;
 use App\Models\Leave;
 use App\Models\Staff;
 use App\Models\Holiday;
+use App\Models\Presence;
+use App\Models\WfhSchedule;
+use App\Models\PresenceType;
+use App\Models\Setting\WorkTime;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Http;
@@ -18,8 +22,7 @@ Artisan::command('qrcode:generate', function () {
     foreach ($staffList as $staff) {
         $token = md5(uniqid(rand(), true));
 
-        // Simpan token dengan status 'unused' dan waktu kedaluwarsa
-        cache()->put("attendance_token_{$staff->id}", $token, now()->addMinutes(5));  // 5 menit valid
+        cache()->put("attendance_token_{$staff->id}", $token, now()->addMinutes(5));
 
         $builder = new Builder(
             writer: new PngWriter(),
@@ -102,31 +105,76 @@ Artisan::command('leave:generate-allocation', function () {
 })->purpose('Generate monthly leave allocation data for all staff')->monthlyOn(1, '00:00');
 
 Artisan::command('wfh:check', function () {
-    $today = Carbon::now()->format('l');
+    $today = Carbon::today();
+    $dayOfWeek = $today->format('l');
+    
+    $workday = WorkTime::where('day', $dayOfWeek)->where('is_workday', 1)->first();
+    $holiday = Holiday::where('date', $today)->where('is_national_holiday', 1)->first();
 
-    $wfhSchedules = \App\Models\WfhSchedule::where($today, true)->get();
+    if ($workday && !$holiday) {
+        $wfhSchedules = WfhSchedule::where($today, true)->get();
 
-    foreach ($wfhSchedules as $schedule) {
-        $user = $schedule->user;
+        foreach ($wfhSchedules as $schedule) {
+            $user = $schedule->user;
 
-        $existingPresence = \App\Models\Presence::where('user_id', $user->id)
-            ->where('date', Carbon::today()->toDateString())
-            ->first();
+            $existingPresence = Presence::where('user_id', $user->id)
+                ->where('date', $today->toDateString())
+                ->first();
+            
+            if (!$existingPresence) {
+                $presenceType = PresenceType::where('type', 'WFH')->first();
 
-        if (!$existingPresence) {
-            $presenceType = \App\Models\PresenceType::where('type', 'WFH')->first();
+                Presence::create([
+                    'user_id' => $user->id,
+                    'presence_type_id' => $presenceType->id,
+                    'date' => $today->toDateString(),
+                    'time_arrived' => null,
+                    'return_time' => null,
+                ]);
 
-            \App\Models\Presence::create([
-                'user_id' => $user->id,
-                'presence_type_id' => $presenceType->id,
-                'date' => Carbon::today()->toDateString(),
-                'time_arrived' => null,
-                'return_time' => null,
-            ]);
-
-            $this->info("Presence created for user: {$user->name} for WFH today.");
+                $this->info("Presensi WFH dibuat untuk user: {$user->name}.");
+            }
         }
-    }
 
-    $this->info('WFH check completed successfully.');
-})->purpose('Check and create Presence data for users who are WFH today')->daily();
+        $this->info('Pengecekan WFH selesai.');
+    } else {
+        $this->info('Hari ini bukan hari kerja atau merupakan hari libur nasional.');
+    }
+})->purpose('Pengecekan dan pembuatan presensi WFH untuk users yang dijadwalkan dan belum absen')->daily();
+
+
+Artisan::command('attendance:check-missing', function () {
+    $today = Carbon::today();
+    $dayOfWeek = $today->format('l');
+    
+    $workday = WorkTime::where('day', $dayOfWeek)->where('is_workday', 1)->first();
+    $holiday = Holiday::where('date', $today)->where('is_national_holiday', 1)->first();
+
+    if ($workday && !$holiday) {
+        $staffList = Staff::all();
+
+        $absenceType = PresenceType::where('type', 'Tidak Masuk')->first();
+
+        foreach ($staffList as $staff) {
+            $existingPresence = Presence::where('user_id', $staff->user_id)
+                ->where('date', $today->toDateString())
+                ->first();
+
+            if (!$existingPresence) {
+                Presence::create([
+                    'user_id' => $staff->user_id,
+                    'presence_type_id' => $absenceType->id,
+                    'date' => $today->toDateString(),
+                    'time_arrived' => null,
+                    'return_time' => null,
+                ]);
+
+                $this->info("Presensi Tidak Masuk dibuat untuk user: {$staff->user->name}.");
+            }
+        }
+
+        $this->info('Pengecekan presensi selesai.');
+    } else {
+        $this->info('Hari ini bukan hari kerja atau merupakan hari libur nasional.');
+    }
+})->purpose('Pengecekan dan pembuatan presensi Tidak Masuk untuk staf yang belum absen')->dailyAt('23:50');
