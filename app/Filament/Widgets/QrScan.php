@@ -70,12 +70,19 @@ class QrScan extends Widget implements HasForms
     {
         $holiday = $this->getHoliday();
         if ($holiday && $holiday->is_national_holiday) {
-            return 'Hari ini adalah libur nasional: ' . $holiday->name;
+            return '
+            <h1 class="text-2xl font-bold">Hari ini libur</h1>
+            <p class="text-gray-400">Hari ini adalah libur nasional: ' . $holiday->name . '</p>
+            <p class="text-gray-400">Selamat menikmati liburan Anda!</p>
+            ';
         }
 
         $workTime = $this->getWorkTime();
         if (!$workTime || !$workTime->is_workday) {
-            return 'Hari ini bukan hari kerja';
+            return '
+            <h1 class="text-2xl font-bold">Hari ini bukan hari kerja</h1>
+            <p class="text-gray-400">Mohon untuk kembali bekerja pada hari kerja berikutnya</p>
+            ';
         }
 
         $presenceToday = Presence::where('user_id', Auth::id())
@@ -85,8 +92,11 @@ class QrScan extends Widget implements HasForms
         if ($presenceToday) {
             $presenceType = $presenceToday->presenceType->type;
 
-            if ($presenceType !== 'WFO') {
-                return 'Anda sedang dalam status ' . $presenceType . ' hari ini, Tidak perlu melakukan absensi';
+            if ($presenceType !== 'WFO' && $presenceType !== 'Tidak Masuk') {
+                return '
+                    <h1 class="text-2xl font-bold">Anda tidak perlu melakukan absensi hari ini</h1>
+                    <p class="text-gray-400">Anda sedang dalam status ' . $presenceType . ' hari ini</p>
+                    ';
             }
         }
 
@@ -98,31 +108,44 @@ class QrScan extends Widget implements HasForms
             $attendanceEndTime = $startTime->copy()->addMinutes($workTime->time_limit);
 
             if ($now->greaterThan($attendanceEndTime) && !$this->hasAttendanceToday()) {
-                return 'Batas waktu absensi masuk telah berakhir';
+                return '
+                <h1 class="text-2xl font-bold">Batas waktu absensi masuk telah berakhir</h1>
+                <p class="text-gray-400">Batas waktu absesnsi masuk hari ini adalah ' . $workTime->time_limit . ' menit, mohon untuk absen pada waktu yang telah ditentukan</p>
+                ';
             }
         }
 
         if ($now->lessThan($startTime)) {
-            return 'Absen akan dibuka pada jam ' . $startTime->format('H:i');
+            return '
+            <h1 class="text-2xl font-bold">Menunggu jam masuk kerja</h1>
+            <p class="text-gray-400">Absen akan dibuka pada jam ' . $startTime->format('H:i') . ', silakan kembali pada jam tersebut untuk melakukan absensi</p>
+            ';
         }
 
         if ($now->greaterThan($endTime) && !$this->hasAttendanceToday()) {
-            return 'Anda tidak hadir hari ini';
+            return '
+            <h1 class="text-2xl font-bold">Anda tidak hadir hari ini</h1>
+            <p class="text-gray-400">Mohon untuk absen pada waktu yang tepat</p>
+            ';
         }
 
         if ($this->hasAttendanceToday() && $this->hasFilledLogBookToday() && $now->lessThan($endTime)) {
-            return 'Anda sudah melakukan absensi masuk dan mengisi logbook. Silakan tunggu hingga jam kerja selesai (' . $workTime->end_time . ') untuk melakukan absensi pulang';
+            return '
+            <h1 class="text-2xl font-bold">Menunggu jam kerja selesai</h1>
+            <p class="text-gray-400">Anda sudah melakukan absensi masuk dan mengisi logbook, silahkan tunggu hingga jam kerja selesai (' . $endTime->format('H:i') . ') untuk melakukan absensi pulang</p>
+            ';
         }
 
         return null;
     }
 
 
+
     protected function getFormSchema(): array
     {
         return [
             Textarea::make('work')
-                ->label("Today's Work")
+                ->label(translate("Today's Work"))
                 ->placeholder("- work 1\n- work 2\n- work 3")
                 ->rows(6)
                 ->required(),

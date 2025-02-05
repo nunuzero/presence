@@ -1,2 +1,3 @@
-*
+perm/*
+temp/*
 !.gitignore

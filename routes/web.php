@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Filament\Http\Middleware\Authenticate;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('filament.admin.auth.login');
 });
 
 Route::get('/attendance/verify/{token}/{staff_id}', function ($token, $staff_id) {

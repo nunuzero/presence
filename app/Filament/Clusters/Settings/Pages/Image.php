@@ -91,7 +91,7 @@ class Image extends Page implements HasForms
         return Section::make()
             ->schema([
                 FileUpload::make('login_background')
-                    ->label('Login Background')
+                    ->label('Background')
                     ->localizeLabel()
                     ->openable()
                     ->maxSize(4096)
