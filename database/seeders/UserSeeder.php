@@ -16,28 +16,21 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        User::factory()->create([
-            'name' => 'Nunu',
-            'email' => 'nunu@gmail.com',
-            'password' => 'password',
-        ]);
+        $users = [
+            ['name' => 'Admin', 'email' => 'admin@gmail.com', 'password' => 'password'],
+            ['name' => 'Budi Setiawan', 'email' => 'budisetiawan@gmail.com', 'password' => 'password'],
+            ['name' => 'Dimas Wijaya', 'email' => 'dimaswijaya@gmail.com', 'password' => 'password'],
+            ['name' => 'Budi Santoso', 'email' => 'budisantoso@gmail.com', 'password' => 'password'],
+            ['name' => 'Andi Saputra ', 'email' => 'andisaputra@gmail.com', 'password' => 'password'],
+            ['name' => 'Rina Permata', 'email' => 'rinapermata@gmail.com', 'password' => 'password'],
+            ['name' => 'Indah Lestari', 'email' => 'indahlestari@gmail.com', 'password' => 'password'],
+            ['name' => 'Angga Pratama', 'email' => 'anggapratama@gmail.com', 'password' => 'password'],
+            ['name' => 'Rizky Ramadhan', 'email' => 'rizkyramadhan@gmail.com', 'password' => 'password'],
+            ['name' => 'Anugerah Ashar', 'email' => 'nunu@gmail.com', 'password' => 'password'],
+            ['name' => 'Muhammad Nashir', 'email' => 'nashir@gmail.com', 'password' => 'password'],
+            ['name' => 'Arif Supriyanto', 'email' => 'arif@gmail.com', 'password' => 'password'],
+        ];
 
-        User::factory()->create([
-            'name' => 'Nashir',
-            'email' => 'nashir@gmail.com',
-            'password' => 'password',
-        ]);
-
-        User::factory()->create([
-            'name' => 'Arif',
-            'email' => 'arif@gmail.com',
-            'password' => 'password',
-        ]);
-
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => 'password',
-        ]);
+        User::factory()->createMany($users);
     }
 }
