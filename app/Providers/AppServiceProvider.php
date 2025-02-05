@@ -29,11 +29,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (request()->header('X-Forwarded-Proto') === 'https') {
-            URL::forceScheme('https');
-            config(['filesystems.disks.public.url' => secure_url('storage')]);
-        }
-
         $language = Localization::first()?->language ?? 'en';
         App::setLocale($language);
 
