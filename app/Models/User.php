@@ -65,7 +65,7 @@ class User extends Authenticatable implements HasAvatar
         static::updating(function ($user) {
             $originalImage = $user->getOriginal('profile_image');
             
-            if ($originalImage && Storage::disk('profile_image')->exists($originalImage)) {
+            if ($originalImage && $user->isDirty('profile_image') && Storage::disk('profile_image')->exists($originalImage)) {
                 Storage::disk('profile_image')->delete($originalImage);
             }
         });

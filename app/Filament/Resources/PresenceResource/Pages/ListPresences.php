@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\PresenceResource\Pages;
 
 use Carbon\Carbon;
+use App\Models\User;
 use Filament\Actions;
 use App\Models\Presence;
 use Filament\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Spatie\Browsershot\Browsershot;
 use Filament\Forms\Components\Split;
+use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Blade;
 use Filament\Resources\Components\Tab;
 use Filament\Forms\Components\TextInput;
@@ -37,18 +39,27 @@ class ListPresences extends ListRecords
                         ->default('tes')
                         ->required()
                         ->columnSpanFull(),
+                    Select::make('type')
+                        ->label(translate('Type'))
+                        ->options([
+                            'All Staff' => translate('All Staff'),
+                            'Per Staff' => translate('Per Staff'),
+                        ])
+                        ->native(false)
+                        ->default('Per Staff')
+                        ->required(),
                     Split::make([
                         DatePicker::make('start_date')
                             ->label('From Date')
                             ->localizeLabel()
-                            ->default('2024-2-1')
+                            ->default('2024-10-1')
                             ->required()
                             ->format('d/m/Y')
                             ->native(false),
                         DatePicker::make('end_date')
                             ->label('To')
                             ->localizeLabel()
-                            ->default('2025-2-6')
+                            ->default('2024-12-31')
                             ->required()
                             ->format('d/m/Y')
                             ->native(false),
@@ -65,41 +76,86 @@ class ListPresences extends ListRecords
                     $formattedStartDate = $startDateCarbon->day . ' ' . translate($startDateCarbon->format('F')) . ' ' . $startDateCarbon->year;
                     $formattedEndDate = $endDateCarbon->day . ' ' . translate($endDateCarbon->format('F')) . ' ' . $endDateCarbon->year;
 
-                    $presences = Presence::with(['user', 'presenceType'])
-                        ->whereBetween('date', [$startDateCarbon->toDateTimeString(), $endDateCarbon->toDateTimeString()])
-                        ->get()
-                        ->groupBy(function ($presence) {
-                            $month = Carbon2::parse($presence->date)->format('F');
-                            $year = Carbon2::parse($presence->date)->format('Y');
-                            return __(':month :year', ['month' => translate($month), 'year' => $year]);
-                        })
-                        ->map(function ($groupByMonth) {
-                            return $groupByMonth->groupBy('user_id')->map(function ($userPresences) {
+                    if ($data['type'] != 'All Staff') {
+                        $presences = Presence::with(['user', 'presenceType'])
+                            ->whereBetween('date', [$startDateCarbon->toDateTimeString(), $endDateCarbon->toDateTimeString()])
+                            ->get()
+                            ->groupBy('user_id')
+                            ->map(function ($userPresences) {
                                 $types = ['WFO', 'WFH', 'Izin', 'Sakit', 'Cuti', 'Tidak Masuk'];
-                                $summary = array_fill_keys($types, 0);
+                                $userSummary = [];
 
-                                foreach ($userPresences as $presence) {
-                                    $type = $presence->presenceType->type ?? 'Tidak Masuk';
-                                    $summary[$type]++;
+                                $groupByMonth = $userPresences->groupBy(function ($presence) {
+                                    return Carbon::parse($presence->date)->format('F Y');
+                                });
+
+                                foreach ($groupByMonth as $month => $presences) {
+                                    $summary = array_fill_keys($types, 0);
+
+                                    foreach ($presences as $presence) {
+                                        $type = $presence->presenceType->type ?? 'Tidak Masuk';
+                                        $summary[$type]++;
+                                    }
+
+                                    $userSummary[$month] = [
+                                        'summary' => $summary,
+                                        'presences' => $presences
+                                    ];
                                 }
 
                                 return [
                                     'user_name' => $userPresences->first()->user->name ?? 'Unknown',
-                                    'summary' => $summary,
+                                    'user' => $userPresences->first()->user,
+                                    'user_summary' => $userSummary
                                 ];
                             });
-                        });
 
-                    $html = Blade::render('pdf.presence', [
-                        'presences' => $presences,
-                        'name' => $name,
-                        'startDate' => $formattedStartDate,
-                        'endDate' => $formattedEndDate,
-                        'startDateLabel' => translate('From Date:'),
-                        'endDateLabel' => translate('To:'),
-                    ]);
 
-                    $pdfPath = storage_path('app/public/' . $name . '.pdf');
+                        $html = Blade::render('pdf.presence-per-staff', [
+                            'presences' => $presences,
+                            'name' => $name,
+                            'startDate' => $formattedStartDate,
+                            'endDate' => $formattedEndDate,
+                            'startDateLabel' => translate('From Date:'),
+                            'endDateLabel' => translate('To:'),
+                        ]);
+                    } else {
+                        $presences = Presence::with(['user', 'presenceType'])
+                            ->whereBetween('date', [$startDateCarbon->toDateTimeString(), $endDateCarbon->toDateTimeString()])
+                            ->get()
+                            ->groupBy(function ($presence) {
+                                $month = Carbon2::parse($presence->date)->format('F');
+                                $year = Carbon2::parse($presence->date)->format('Y');
+                                return __(':month :year', ['month' => translate($month), 'year' => $year]);
+                            })
+                            ->map(function ($groupByMonth) {
+                                return $groupByMonth->groupBy('user_id')->map(function ($userPresences) {
+                                    $types = ['WFO', 'WFH', 'Izin', 'Sakit', 'Cuti', 'Tidak Masuk'];
+                                    $summary = array_fill_keys($types, 0);
+
+                                    foreach ($userPresences as $presence) {
+                                        $type = $presence->presenceType->type ?? 'Tidak Masuk';
+                                        $summary[$type]++;
+                                    }
+
+                                    return [
+                                        'user_name' => $userPresences->first()->user->name ?? 'Unknown',
+                                        'summary' => $summary,
+                                    ];
+                                });
+                            });
+
+                        $html = Blade::render('pdf.presence', [
+                            'presences' => $presences,
+                            'name' => $name,
+                            'startDate' => $formattedStartDate,
+                            'endDate' => $formattedEndDate,
+                            'startDateLabel' => translate('From Date:'),
+                            'endDateLabel' => translate('To:'),
+                        ]);
+                    }
+
+                    $pdfPath = storage_path('app/public/report/' . $name . '.pdf');
 
                     $nodePath = trim(shell_exec('which node'));
                     $npmPath = trim(shell_exec('which npm'));

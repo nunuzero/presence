@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buku Kegiatan Semua Karyawan</title>
+    <title>Buku Kegiatan Per Karyawan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .page-break {
@@ -31,7 +31,7 @@
                 <div class="staff-photo">
                     <img src="{{ $userLog['user']->profile_image ? Storage::url($userLog['user']->profile_image) : asset('img/avatar-placeholder.webp') }}"
                         alt="{{ $userLog['user']->name }}"
-                        class="w-24 h-24 rounded-lg text-center border-4 border-gray-300">
+                        class="w-24 h-24 rounded-lg text-center border-2 border-gray-500">
 
                 </div>
                 <div class="staff-details">
@@ -52,24 +52,24 @@
             @foreach ($groupedByMonth as $month => $logs)
                 <div class="work-entry mt-4">
                     <h3 class="text-lg font-semibold">{{ $month }}</h3>
-                    <table class="w-full mt-2 border-collapse border border-gray-300">
+                    <table class="w-full mt-2 border-collapse border border-gray-500 text-xs">
                         <thead>
                             <tr>
-                                <th class="px-4 py-2 border border-gray-300">{{ translate('No') }}</th>
-                                <th class="px-4 py-2 border border-gray-300">{{ translate('Tanggal') }}</th>
-                                <th class="px-4 py-2 border border-gray-300">{{ translate('Dibuat Pada') }}</th>
-                                <th class="px-4 py-2 border border-gray-300">{{ translate('Pekerjaan') }}</th>
+                                <th class="px-4 py-2 border border-gray-500">{{ translate('No') }}</th>
+                                <th class="px-4 py-2 border border-gray-500">{{ translate('Tanggal') }}</th>
+                                <th class="px-4 py-2 border border-gray-500">{{ translate('Dibuat Pada') }}</th>
+                                <th class="px-4 py-2 border border-gray-500">{{ translate('Pekerjaan') }}</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach ($logs as $index => $log)
                                 <tr>
-                                    <td class="px-4 py-2 border border-gray-300">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-2 border border-gray-300">
+                                    <td class="px-4 py-2 border border-gray-500 text-center">{{ $index + 1 }}</td>
+                                    <td class="px-4 py-2 border border-gray-500 text-center">
                                         {{ Carbon::parse($log['date'])->translatedFormat('j F Y') }}</td>
-                                    <td class="px-4 py-2 border border-gray-300">
+                                    <td class="px-4 py-2 border border-gray-500 text-center">
                                         {{ Carbon::parse($log['created_at'])->format('H:i:s') }}</td>
-                                    <td class="px-4 py-2 border border-gray-300">{!! $log['work'] !!}</td>
+                                    <td class="px-4 py-2 border border-gray-500">{!! $log['work'] !!}</td>
                                 </tr>
                             @endforeach
                         </tbody>

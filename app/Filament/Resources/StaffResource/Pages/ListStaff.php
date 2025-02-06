@@ -2,11 +2,12 @@
 
 namespace App\Filament\Resources\StaffResource\Pages;
 
-use App\Filament\Resources\StaffResource;
 use App\Models\Staff;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
 use Spatie\Browsershot\Browsershot;
+use Illuminate\Support\Facades\Blade;
+use App\Filament\Resources\StaffResource;
+use Filament\Resources\Pages\ListRecords;
 
 class ListStaff extends ListRecords
 {
@@ -20,7 +21,10 @@ class ListStaff extends ListRecords
                 ->icon('heroicon-o-document')
                 ->action(function (array $data) {
                     $staff = Staff::all();
-                    $html = view("pdf.staff", compact("staff"))->render();
+                    $html = Blade::render('pdf.staff', [
+                        'staff' => $staff,
+                    ]);
+                    
                     $pdfPath = storage_path("app/public/report/daftar_semua_karyawan.pdf");
 
                     $nodePath = trim(shell_exec('which node'));
@@ -32,7 +36,7 @@ class ListStaff extends ListRecords
                         ->format('A4')
                         ->margins(10, 10, 10, 10)
                         ->noSandbox()
-                        ->save($pdfPath);
+                        ->savePdf($pdfPath);
 
                     return response()->download($pdfPath);
                 }),

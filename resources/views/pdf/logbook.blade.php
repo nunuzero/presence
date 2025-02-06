@@ -17,14 +17,14 @@
     </div>
 
     @foreach ($logBook as $monthYear => $dates)
-        <h2 class="text-lg font-bold mt-6">{{ $monthYear }}</h2>
-        <table class="min-w-full mt-4 border-collapse">
+        <h2 class="text-xl font-bold mt-6">{{ $monthYear }}</h2>
+        <table class="min-w-full mt-4 border border-collapse border-gray-500 text-xs">
             <thead>
                 <tr>
-                    <th class="px-4 py-2 border bg-gray-100">No</th>
-                    <th class="px-4 py-2 border bg-gray-100">Nama</th>
-                    <th class="px-4 py-2 border bg-gray-100">Dibuat Pada</th>
-                    <th class="px-4 py-2 border bg-gray-100">Pekerjaan</th>
+                    <th class="px-4 py-2 border bg-gray-100 border-gray-500">No</th>
+                    <th class="px-4 py-2 border bg-gray-100 border-gray-500">Nama</th>
+                    <th class="px-4 py-2 border bg-gray-100 border-gray-500">Dibuat Pada</th>
+                    <th class="px-4 py-2 border bg-gray-100 border-gray-500">Pekerjaan</th>
                 </tr>
             </thead>
             <tbody>
@@ -33,19 +33,19 @@
                 @endphp
                 @foreach ($dates as $date => $users)
                     <tr>
-                        <td colspan="4" class="text-center bg-gray-300 font-bold">
+                        <td colspan="4" class="text-center bg-gray-300 border-gray-500 font-bold text-lg">
                             {{ \Carbon\Carbon::parse($date)->translatedFormat('j F Y') }}
                         </td>
                     </tr>
                     @foreach ($users as $userLogs)
                         @foreach ($userLogs['logs'] as $log)
                             <tr>
-                                <td class="px-4 py-2 border">{{ $no++ }}</td>
-                                <td class="px-4 py-2 border text-left">{{ $userLogs['user_name'] }}</td>
-                                <td class="px-4 py-2 border text-left">
+                                <td class="px-4 py-2 border text-center border-gray-500">{{ $no++ }}</td>
+                                <td class="px-4 py-2 border text-left border-gray-500">{{ $userLogs['user_name'] }}</td>
+                                <td class="px-4 py-2 border text-center border-gray-500">
                                     {{ \Carbon\Carbon::parse($userLogs['created_at'])->format('H:i:s') }}
                                 </td>
-                                <td class="px-4 py-2 border text-left">{!! $log !!}</td>
+                                <td class="px-4 py-2 border text-left border-gray-500">{!! $log !!}</td>
                             </tr>
                         @endforeach
                     @endforeach

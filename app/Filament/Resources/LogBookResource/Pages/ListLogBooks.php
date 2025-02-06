@@ -149,7 +149,7 @@ class ListLogBooks extends ListRecords
                         ]);
                     }
 
-                    $pdfPath = storage_path('app/public/' . $name . '.pdf');
+                    $pdfPath = storage_path('app/public/report/' . $name . '.pdf');
 
                     $nodePath = trim(shell_exec('which node'));
                     $npmPath = trim(shell_exec('which npm'));

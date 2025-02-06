@@ -12,14 +12,14 @@
     <h1 class="text-xl font-bold text-center mb-6">Daftar Semua Karyawan</h1>
     <br class="m-4">
 
-    <table class="w-full border-collapse border border-gray-300 text-xs">
+    <table class="w-full border-collapse border border-gray-500 text-xs">
         <thead class="bg-gray-200">
             <tr>
-                <th class="border border-gray-300 px-3 py-2">No</th>
-                <th class="border border-gray-300 px-3 py-2">Nama</th>
-                <th class="border border-gray-300 px-3 py-2">Waktu Mulai Bekerja</th>
-                <th class="border border-gray-300 px-3 py-2">Pendidikan Terakhir</th>
-                <th class="border border-gray-300 px-3 py-2">Jabatan</th>
+                <th class="border border-gray-500 px-3 py-2">No</th>
+                <th class="border border-gray-500 px-3 py-2">Nama</th>
+                <th class="border border-gray-500 px-3 py-2">Waktu Mulai Bekerja</th>
+                <th class="border border-gray-500 px-3 py-2">Pendidikan Terakhir</th>
+                <th class="border border-gray-500 px-3 py-2">Jabatan</th>
             </tr>
         </thead>
         <tbody>
@@ -46,13 +46,13 @@
 
                     @foreach ($filteredStaff as $st)
                         <tr>
-                            <td class="border border-gray-300 px-3 py-2 text-center">{{ $no++ }}</td>
-                            <td class="border border-gray-300 px-3 py-2">{{ $st->user->name }}</td>
-                            <td class="border border-gray-300 px-3 py-2">
+                            <td class="border border-gray-500 px-3 py-2 text-center">{{ $no++ }}</td>
+                            <td class="border border-gray-500 px-3 py-2">{{ $st->user->name }}</td>
+                            <td class="border border-gray-500 px-3 py-2">
                                 {{ \Carbon\Carbon::parse($st->start_date)->translatedFormat('j F Y') }}
                             </td>
-                            <td class="border border-gray-300 px-3 py-2">{{ $st->education }}</td>
-                            <td class="border border-gray-300 px-3 py-2">{{ $st->position->position }}</td>
+                            <td class="border border-gray-500 px-3 py-2">{{ $st->education }}</td>
+                            <td class="border border-gray-500 px-3 py-2">{{ $st->position->position }}</td>
                         </tr>
                     @endforeach
                 @endif
