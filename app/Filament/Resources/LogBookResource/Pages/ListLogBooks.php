@@ -56,7 +56,7 @@ class ListLogBooks extends ListRecords
                         DatePicker::make('end_date')
                             ->label('To')
                             ->localizeLabel()
-                            ->default('2025-2-6')
+                            ->default('2024-12-31')
                             ->required()
                             ->format('d/m/Y')
                             ->native(false),

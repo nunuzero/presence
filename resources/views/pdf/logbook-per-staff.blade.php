@@ -29,17 +29,22 @@
         <div class="staff-section mb-8 @if (!$loop->first) page-break @endif">
             <div class="flex items-center space-x-4">
                 <div class="staff-photo">
-                    <img src="{{ $userLog['user']->photo_url ?: asset('img/avatar-placeholder.webp') }}" alt="{{ $userLog['user']->name }}" class="w-24 h-24 rounded-lg text-center border-4 border-gray-300">
+                    <img src="{{ $userLog['user']->profile_image ? Storage::url($userLog['user']->profile_image) : asset('img/avatar-placeholder.webp') }}"
+                        alt="{{ $userLog['user']->name }}"
+                        class="w-24 h-24 rounded-lg text-center border-4 border-gray-300">
+
                 </div>
                 <div class="staff-details">
                     <p><strong>{{ translate('Nama Karyawan:') }}</strong> {{ $userLog['user']->name }}</p>
-                    <p><strong>{{ translate('Pendidikan Terakhir:') }}</strong> {{ $userLog['user']->education }}</p>
-                    <p><strong>{{ translate('Jabatan:') }}</strong> {{ $userLog['user']->staff->position->position }}</p>
+                    <p><strong>{{ translate('Pendidikan Terakhir:') }}</strong>
+                        {{ $userLog['user']->staff->education }}</p>
+                    <p><strong>{{ translate('Jabatan:') }}</strong> {{ $userLog['user']->staff->position->position }}
+                    </p>
                 </div>
             </div>
 
             @php
-                $groupedByMonth = collect($userLog['work_summary'])->groupBy(function($log) {
+                $groupedByMonth = collect($userLog['work_summary'])->groupBy(function ($log) {
                     return Carbon::parse($log['date'])->translatedFormat('F Y');
                 });
             @endphp
@@ -60,8 +65,10 @@
                             @foreach ($logs as $index => $log)
                                 <tr>
                                     <td class="px-4 py-2 border border-gray-300">{{ $index + 1 }}</td>
-                                    <td class="px-4 py-2 border border-gray-300">{{ Carbon::parse($log['date'])->translatedFormat('j F Y') }}</td>
-                                    <td class="px-4 py-2 border border-gray-300">{{ Carbon::parse($log['created_at'])->format('H:i:s') }}</td>
+                                    <td class="px-4 py-2 border border-gray-300">
+                                        {{ Carbon::parse($log['date'])->translatedFormat('j F Y') }}</td>
+                                    <td class="px-4 py-2 border border-gray-300">
+                                        {{ Carbon::parse($log['created_at'])->format('H:i:s') }}</td>
                                     <td class="px-4 py-2 border border-gray-300">{!! $log['work'] !!}</td>
                                 </tr>
                             @endforeach
