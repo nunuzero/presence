@@ -121,7 +121,7 @@ class PresenceResource extends Resource
                     ->localizeLabel()
                     ->date()
                     ->sortable()
-                    ->hidden(),
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('time_arrived')
                     ->label('Time Arrived')
                     ->localizeLabel()

@@ -108,11 +108,15 @@ class StaffResource extends Resource
                 Tables\Columns\TextColumn::make('staff.education')
                     ->label('Education')
                     ->localizeLabel()
-                    ->searchable(),
+                    ->searchable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('staff.position.position')
                     ->label('Position')
                     ->localizeLabel()
-                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('staff.user.roles.name')
+                    ->label('Roles')
+                    ->localizeLabel()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('staff.created_at')
                     ->label('Created At')
