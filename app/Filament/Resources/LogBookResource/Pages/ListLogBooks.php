@@ -2,17 +2,19 @@
 
 namespace App\Filament\Resources\LogBookResource\Pages;
 
+use Carbon\Carbon;
 use Filament\Actions;
+use App\Models\LogBook;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\Browsershot\Browsershot;
 use Filament\Forms\Components\Split;
+use Illuminate\Support\Facades\Blade;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\ListRecords;
-use App\Filament\Resources\LogBookResource;
-use App\Models\LogBook;
-use Carbon\Carbon;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Carbon as Carbon2;
+use App\Filament\Resources\LogBookResource;
+use Filament\Forms\Components\Select;
 
 class ListLogBooks extends ListRecords
 {
@@ -31,18 +33,30 @@ class ListLogBooks extends ListRecords
                     TextInput::make('name')
                         ->label('Name')
                         ->localizeLabel()
+                        ->default('tes')
                         ->required()
                         ->columnSpanFull(),
+                    Select::make('type')
+                        ->label(translate('Type'))
+                        ->options([
+                            'All Staff' => translate('All Staff'),
+                            'Per Staff' => translate('Per Staff'),
+                        ])
+                        ->native(false)
+                        ->default('Per Staff')
+                        ->required(),
                     Split::make([
                         DatePicker::make('start_date')
                             ->label('From Date')
                             ->localizeLabel()
+                            ->default('2024-12-1')
                             ->required()
                             ->format('d/m/Y')
                             ->native(false),
                         DatePicker::make('end_date')
                             ->label('To')
                             ->localizeLabel()
+                            ->default('2025-2-6')
                             ->required()
                             ->format('d/m/Y')
                             ->native(false),
@@ -50,6 +64,7 @@ class ListLogBooks extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $name = $data['name'];
+
                     $startDate = $data['start_date'];
                     $endDate = $data['end_date'];
 
@@ -59,44 +74,97 @@ class ListLogBooks extends ListRecords
                     $formattedStartDate = $startDateCarbon->day . ' ' . translate($startDateCarbon->format('F')) . ' ' . $startDateCarbon->year;
                     $formattedEndDate = $endDateCarbon->day . ' ' . translate($endDateCarbon->format('F')) . ' ' . $endDateCarbon->year;
 
-                    $logBook = LogBook::whereBetween('date', [$startDateCarbon, $endDateCarbon])
-                        ->orderBy('date')
-                        ->get()
-                        ->groupBy(function ($log) {
-                            $month = Carbon2::parse($log->date)->format('F');
-                            $year = Carbon2::parse($log->date)->format('Y');
-                            return __(':month :year', ['month' => translate($month), 'year' => $year]);
-                        })
-                        ->map(function ($groupByMonth) {
-                            return $groupByMonth->groupBy('user_id')->map(function ($userLogs) {
+                    if ($data['type'] != 'All Staff') {
+                        $logBook = LogBook::whereBetween('date', [$startDateCarbon, $endDateCarbon])
+                            ->orderBy('date')
+                            ->get()
+                            ->groupBy('user_id')
+                            ->map(function ($userLogs) {
+                                $user = $userLogs->first()->user;
                                 $workSummary = [];
-                                $createdAt = $userLogs->first()->created_at;
 
-                                foreach ($userLogs as $log) {
-                                    $workSummary[] = nl2br(e($log->work));
+                                $groupedByMonth = $userLogs->groupBy(function ($log) {
+                                    return Carbon::parse($log->date)->format('F Y');
+                                });
+
+                                foreach ($groupedByMonth as $month => $logs) {
+                                    foreach ($logs as $log) {
+                                        $workSummary[] = [
+                                            'date' => Carbon::parse($log->date)->format('j F Y'),
+                                            'created_at' => Carbon::parse($log->created_at)->format('H:i:s'),
+                                            'work' => nl2br(e($log->work)),
+                                        ];
+                                    }
                                 }
 
                                 return [
-                                    'user_name' => $userLogs->first()->user->name ?? 'Unknown',
-                                    'logs' => $workSummary,
-                                    'created_at' => $createdAt,
+                                    'user' => $user,
+                                    'work_summary' => $workSummary,
                                 ];
                             });
-                        });
 
-                    return response()->streamDownload(function () use ($name, $logBook, $formattedStartDate, $formattedEndDate) {
-                        echo Pdf::loadHtml(
-                            Blade::render('pdf.logbook', [
-                                'logBook' => $logBook,
-                                'name' => $name,
-                                'startDate' => $formattedStartDate,
-                                'endDate' => $formattedEndDate,
-                                'startDateLabel' => translate('From Date:'),
-                                'endDateLabel' => translate('To:'),
-                            ])
-                        )->stream();
-                    }, $name . '.pdf');
+                        $html = Blade::render('pdf.logbook-per-staff', [
+                            'logBook' => $logBook,
+                            'name' => $name,
+                            'startDate' => $formattedStartDate,
+                            'endDate' => $formattedEndDate,
+                            'startDateLabel' => translate('From Date:'),
+                            'endDateLabel' => translate('To:'),
+                        ]);
+                    } else {
+                        $logBook = LogBook::whereBetween('date', [$startDateCarbon, $endDateCarbon])
+                            ->orderBy('date')
+                            ->get()
+                            ->groupBy(function ($log) {
+                                $monthYear = Carbon::parse($log->date)->format('F Y');
+                                $monthTranslated = translate(Carbon::parse($log->date)->format('F'));
+                                return $monthTranslated . ' ' . Carbon::parse($log->date)->year;
+                            })
+                            ->map(function ($monthLogs) {
+                                return $monthLogs->groupBy('date')->map(function ($dateLogs) {
+                                    return $dateLogs->groupBy('user_id')->map(function ($userLogs) {
+                                        $workSummary = [];
+                                        $createdAt = $userLogs->first()->created_at;
+
+                                        foreach ($userLogs as $log) {
+                                            $workSummary[] = nl2br(e($log->work));
+                                        }
+
+                                        return [
+                                            'user_name' => $userLogs->first()->user->name ?? 'Unknown',
+                                            'logs' => $workSummary,
+                                            'created_at' => $createdAt,
+                                        ];
+                                    });
+                                });
+                            });
+
+                        $html = Blade::render('pdf.logbook', [
+                            'logBook' => $logBook,
+                            'name' => $name,
+                            'startDate' => $formattedStartDate,
+                            'endDate' => $formattedEndDate,
+                            'startDateLabel' => translate('From Date:'),
+                            'endDateLabel' => translate('To:'),
+                        ]);
+                    }
+
+                    $pdfPath = storage_path('app/public/' . $name . '.pdf');
+
+                    $nodePath = trim(shell_exec('which node'));
+                    $npmPath = trim(shell_exec('which npm'));
+
+                    Browsershot::html($html)
+                        ->setNodeBinary($nodePath)
+                        ->setNpmBinary($npmPath)
+                        ->margins(10, 10, 10, 10)
+                        ->format('A4')
+                        ->noSandbox()
+                        ->savePdf($pdfPath);
+
+                    return response()->download($pdfPath);
                 }),
+
         ];
     }
 }

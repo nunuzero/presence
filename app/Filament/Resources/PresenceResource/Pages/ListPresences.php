@@ -3,18 +3,19 @@
 namespace App\Filament\Resources\PresenceResource\Pages;
 
 use Carbon\Carbon;
-use Illuminate\Support\Carbon as Carbon2;
 use Filament\Actions;
 use App\Models\Presence;
+use Filament\Actions\Action;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Spatie\Browsershot\Browsershot;
 use Filament\Forms\Components\Split;
 use Illuminate\Support\Facades\Blade;
 use Filament\Resources\Components\Tab;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Support\Carbon as Carbon2;
 use App\Filament\Resources\PresenceResource;
-use Filament\Forms\Components\Actions\Action;
 
 class ListPresences extends ListRecords
 {
@@ -23,7 +24,7 @@ class ListPresences extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('report')
+            Action::make('report')
                 ->label(translate('PDF Report'))
                 ->icon('heroicon-o-document')
                 ->modalSubmitActionLabel(translate('Create'))
@@ -33,18 +34,21 @@ class ListPresences extends ListRecords
                     TextInput::make('name')
                         ->label('Name')
                         ->localizeLabel()
+                        ->default('tes')
                         ->required()
                         ->columnSpanFull(),
                     Split::make([
                         DatePicker::make('start_date')
                             ->label('From Date')
                             ->localizeLabel()
+                            ->default('2024-2-1')
                             ->required()
                             ->format('d/m/Y')
                             ->native(false),
                         DatePicker::make('end_date')
                             ->label('To')
                             ->localizeLabel()
+                            ->default('2025-2-6')
                             ->required()
                             ->format('d/m/Y')
                             ->native(false),
@@ -86,18 +90,30 @@ class ListPresences extends ListRecords
                             });
                         });
 
-                    return response()->streamDownload(function () use ($name, $presences, $formattedStartDate, $formattedEndDate) {
-                        echo Pdf::loadHtml(
-                            Blade::render('pdf.presence', [
-                                'presences' => $presences,
-                                'name' => $name,
-                                'startDate' => $formattedStartDate,
-                                'endDate' => $formattedEndDate,
-                                'startDateLabel' => translate('From Date:'),
-                                'endDateLabel' => translate('To:'),
-                            ])
-                        )->stream();
-                    }, $name . '.pdf');
+                    $html = Blade::render('pdf.presence', [
+                        'presences' => $presences,
+                        'name' => $name,
+                        'startDate' => $formattedStartDate,
+                        'endDate' => $formattedEndDate,
+                        'startDateLabel' => translate('From Date:'),
+                        'endDateLabel' => translate('To:'),
+                    ]);
+
+                    $pdfPath = storage_path('app/public/' . $name . '.pdf');
+
+                    $nodePath = trim(shell_exec('which node'));
+                    $npmPath = trim(shell_exec('which npm'));
+
+                    Browsershot::html($html)
+                        ->setNodeBinary($nodePath)
+                        ->setNpmBinary($npmPath)
+                        ->margins(10, 10, 10, 10)
+                        ->format('A4')
+                        ->noSandbox()
+                        ->savePdf($pdfPath);
+
+
+                    return response()->download($pdfPath);
                 }),
         ];
     }

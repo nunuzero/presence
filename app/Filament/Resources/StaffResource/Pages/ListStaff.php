@@ -6,8 +6,7 @@ use App\Filament\Resources\StaffResource;
 use App\Models\Staff;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Blade;
+use Spatie\Browsershot\Browsershot;
 
 class ListStaff extends ListRecords
 {
@@ -20,14 +19,22 @@ class ListStaff extends ListRecords
                 ->label(translate('PDF Report'))
                 ->icon('heroicon-o-document')
                 ->action(function (array $data) {
-                    $staff = Staff::get();
-                    return response()->streamDownload(function () use ($staff) {
-                        echo Pdf::loadHtml(
-                            Blade::render('pdf.staff', [
-                                'staff' => $staff,
-                            ])
-                        )->stream();
-                    }, translate('List All Staff') . '.pdf');
+                    $staff = Staff::all();
+                    $html = view("pdf.staff", compact("staff"))->render();
+                    $pdfPath = storage_path("app/public/report/daftar_semua_karyawan.pdf");
+
+                    $nodePath = trim(shell_exec('which node'));
+                    $npmPath = trim(shell_exec('which npm'));
+
+                    Browsershot::html($html)
+                        ->setNodeBinary($nodePath)
+                        ->setNpmBinary($npmPath)
+                        ->format('A4')
+                        ->margins(10, 10, 10, 10)
+                        ->noSandbox()
+                        ->save($pdfPath);
+
+                    return response()->download($pdfPath);
                 }),
             Actions\CreateAction::make(),
         ];
