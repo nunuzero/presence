@@ -21,6 +21,11 @@ class QrScan extends Widget implements HasForms
 
     public $work;
 
+    // public function getColumnSpan(): string
+    // {
+    //     return 'full';
+    // }
+
     public static function canView(): bool
     {
         return auth()->user()->can('widget_QrScan');
@@ -104,17 +109,6 @@ class QrScan extends Widget implements HasForms
         $startTime = now()->setTimeFromTimeString($workTime->start_time);
         $endTime = now()->setTimeFromTimeString($workTime->end_time);
 
-        if ($workTime->time_limit !== null) {
-            $attendanceEndTime = $startTime->copy()->addMinutes($workTime->time_limit);
-
-            if ($now->greaterThan($attendanceEndTime) && !$this->hasAttendanceToday()) {
-                return '
-                <h1 class="text-2xl font-bold">Batas waktu absensi masuk telah berakhir</h1>
-                <p class="text-gray-400">Batas waktu absesnsi masuk hari ini adalah ' . $workTime->time_limit . ' menit, mohon untuk absen pada waktu yang telah ditentukan</p>
-                ';
-            }
-        }
-
         if ($now->lessThan($startTime)) {
             return '
             <h1 class="text-2xl font-bold">Menunggu jam masuk kerja</h1>
@@ -134,6 +128,17 @@ class QrScan extends Widget implements HasForms
             <h1 class="text-2xl font-bold">Menunggu jam kerja selesai</h1>
             <p class="text-gray-400">Anda sudah melakukan absensi masuk dan mengisi logbook, silahkan tunggu hingga jam kerja selesai (' . $endTime->format('H:i') . ') untuk melakukan absensi pulang</p>
             ';
+        }
+
+        if ($workTime->time_limit !== null) {
+            $attendanceEndTime = $startTime->copy()->addMinutes($workTime->time_limit);
+
+            if ($now->greaterThan($attendanceEndTime) && !$this->hasAttendanceToday()) {
+                return '
+                <h1 class="text-2xl font-bold">Batas waktu absensi masuk telah berakhir</h1>
+                <p class="text-gray-400">Batas waktu absesnsi masuk hari ini adalah ' . $workTime->time_limit . ' menit, mohon untuk absen pada waktu yang telah ditentukan</p>
+                ';
+            }
         }
 
         return null;
