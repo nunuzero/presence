@@ -145,6 +145,7 @@ class RoleHasPermissionSeeder extends Seeder
             ['permission_id' => '126', 'role_id' => '2'],
             ['permission_id' => '127', 'role_id' => '2'],
             ['permission_id' => '128', 'role_id' => '2'],
+            ['permission_id' => '129', 'role_id' => '2'],
         ];
 
         DB::table('role_has_permissions')->insert($rolePermissions);
