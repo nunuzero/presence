@@ -142,6 +142,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'delete_request', 'guard_name' => 'web'],
             ['name' => 'force_delete_request', 'guard_name' => 'web'],
             ['name' => 'force_delete_any_request', 'guard_name' => 'web'],
+            ['name' => 'widget_WorkTimeTableWidget', 'guard_name' => 'web'],
         ];
 
         foreach ($permissions as $permission) {
